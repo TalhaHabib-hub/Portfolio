@@ -18,7 +18,7 @@
   var BACK_ROLE = 'MERN & Laravel Developer';
   var BACK_PLACE = 'Chitral, Pakistan';
   var TYPE_ROLES = ['Full-Stack Developer', 'MERN Developer', 'Laravel Developer', 'Future AI Engineer']; // [] = no typing
-  var COLORS = ['#2fe6dd', '#7a6bff', '#ff7ab8', '#ffd27a', '#ffffff'];
+  var COLORS = ['#ffffff'];
 
   // ---------- 1. Flip: the WHOLE hexagon flips (clip-path stays on the faces, never on the rotating part) ----------
   var hex = document.querySelector(FLIP_TARGET);
@@ -45,15 +45,29 @@
     flip.tabIndex = 0;
     flip.setAttribute('role', 'button');
     flip.setAttribute('aria-label', 'Flip photo card');
-    var setFlip = function (on) { flip.classList.toggle('is-flipped', on); flip.setAttribute('aria-pressed', on); };
+    var pinned = false;
+    var hovering = false;
+    var setFlip = function (on) { flip.classList.toggle('is-flipped', on); flip.setAttribute('aria-pressed', on ? 'true' : 'false'); };
     if (canHover) {
-      flip.addEventListener('pointerenter', function () { setFlip(true); });
-      flip.addEventListener('pointerleave', function () { setFlip(false); });
+      flip.addEventListener('pointerenter', function () { hovering = true; setFlip(true); });
+      flip.addEventListener('pointerleave', function () { hovering = false; setFlip(pinned); });
+      flip.addEventListener('click', function () {
+        pinned = !pinned;
+        setFlip(pinned);
+      });
     } else {
       flip.addEventListener('click', function () { setFlip(!flip.classList.contains('is-flipped')); });
     }
     flip.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlip(!flip.classList.contains('is-flipped')); }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (canHover) {
+          pinned = !pinned;
+          setFlip(pinned);
+        } else {
+          setFlip(!flip.classList.contains('is-flipped'));
+        }
+      }
     });
 
     // little tilted orbit ring with a moon, behind the photo
@@ -228,8 +242,31 @@
         p.vy += p.g * dt; p.vx *= 0.985; p.x += p.vx * dt; p.y += p.vy * dt;
         var k = p.life / p.max;
         g.fillStyle = p.c;
-        g.globalAlpha = k * 0.28; g.beginPath(); g.arc(p.x, p.y, p.r * 3 * k + 1, 0, 6.283); g.fill();   // halo
-        g.globalAlpha = k;        g.beginPath(); g.arc(p.x, p.y, p.r * k + .4, 0, 6.283); g.fill();     // core
+        g.globalAlpha = k * 0.28;
+        g.shadowColor = p.c;
+        g.shadowBlur = p.r * 5;
+        g.beginPath();
+        for (var point = 0; point < 8; point++) {
+          var angle = point * Math.PI / 4 - Math.PI / 2;
+          var radius = (point % 2 ? 0.38 : 1) * p.r * 3 * k + 1;
+          var sx = p.x + Math.cos(angle) * radius;
+          var sy = p.y + Math.sin(angle) * radius;
+          if (point === 0) g.moveTo(sx, sy); else g.lineTo(sx, sy);
+        }
+        g.closePath();
+        g.fill();
+        g.globalAlpha = k;
+        g.beginPath();
+        for (var corePoint = 0; corePoint < 8; corePoint++) {
+          var coreAngle = corePoint * Math.PI / 4 - Math.PI / 2;
+          var coreRadius = (corePoint % 2 ? 0.38 : 1) * (p.r * k + .4);
+          var coreX = p.x + Math.cos(coreAngle) * coreRadius;
+          var coreY = p.y + Math.sin(coreAngle) * coreRadius;
+          if (corePoint === 0) g.moveTo(coreX, coreY); else g.lineTo(coreX, coreY);
+        }
+        g.closePath();
+        g.fill();
+        g.shadowBlur = 0;
       }
       for (i = rings.length - 1; i >= 0; i--) {
         var r = rings[i]; r.life -= dt;

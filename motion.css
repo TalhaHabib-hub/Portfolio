@@ -14,11 +14,11 @@
    1. HERO PHOTO — spinning neon rim, pulsing glow, orbiting moon
    ============================================================ */
 
-/* the rim of the hexagon is a slowly rotating rainbow (the rotation is a plain transform = free) */
+/* A white highlight circles the hexagon rim. */
 .hero__hex-wrap .flip-front, .hero__hex-wrap .flip-back { overflow: hidden; background: #0b0d24; }
 .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before {
   content: ""; position: absolute; inset: -45%; z-index: 0;
-  background: conic-gradient(from 0deg, var(--accent), var(--violet), var(--pink), var(--gold), var(--accent));
+  background: conic-gradient(from 0deg, transparent 0 68%, rgba(255,255,255,.22) 72%, #fff 76%, transparent 82% 100%);
   animation: rimSpin 6s linear infinite;
 }
 .hero__hex-wrap .flip-front .hex__inner, .hero__hex-wrap .flip-back .hex__inner { z-index: 1; }
@@ -28,7 +28,7 @@
 .panel--about .hex { position: relative; overflow: hidden; background: #0b0d24; }
 .panel--about .hex::before {
   content: ""; position: absolute; inset: -45%;
-  background: conic-gradient(from 0deg, var(--accent), var(--violet), var(--pink), var(--gold), var(--accent));
+  background: conic-gradient(from 0deg, transparent 0 68%, rgba(255,255,255,.22) 72%, #fff 76%, transparent 82% 100%);
   animation: rimSpin 9s linear infinite;
 }
 .panel--about .hex .hex__inner { z-index: 1; }
@@ -46,7 +46,7 @@
   position: absolute; left: 50%; top: 50%; z-index: -1; pointer-events: none;
   width: 134%; aspect-ratio: 1; margin: -67% 0 0 -67%;
   border-radius: 50%;
-  border: 1px dashed rgba(170, 180, 255, .32);
+  border: 1px dashed rgba(255, 255, 255, .32);
   transform: rotateX(74deg) rotateZ(-16deg);
 }
 .orbit i {
@@ -55,8 +55,8 @@
 }
 .orbit i::after {
   content: ""; position: absolute; top: -7px; left: calc(50% - 7px); width: 14px; height: 14px; border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff, var(--gold) 45%, #a8742e);
-  box-shadow: 0 0 14px 3px rgba(255, 210, 122, .65);
+  background: radial-gradient(circle at 35% 30%, #fff, rgba(255,255,255,.8) 45%, rgba(255,255,255,.15));
+  box-shadow: 0 0 14px 3px rgba(255, 255, 255, .65);
 }
 @keyframes orbitSpin { to { transform: rotate(360deg); } }
 
@@ -191,7 +191,7 @@
 /* slow computer detected by galaxy.js -> keep the page smooth, drop only the decorations */
 .lite .cursor-glow, .lite .orbit, .lite .flip-back .hex__inner::after { display: none; }
 .lite .hero__name { animation: none; }
-.lite .hero__hex-wrap::before, .lite .hero__hex-wrap .flip-front::before, .lite .hero__hex-wrap .flip-back::before { animation: none; }
+.lite .hero__hex-wrap::before { animation: none; }
 .lite .float-icon { animation: none; }
 
 /* visitors who asked their device for less motion */
