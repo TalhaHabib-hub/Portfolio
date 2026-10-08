@@ -200,7 +200,38 @@
     function addChatMessage(message, isUser) {
       var bubble = document.createElement('div');
       bubble.className = 'portfolio-chat__message portfolio-chat__message--' + (isUser ? 'user' : 'assistant');
-      bubble.textContent = message;
+      var linkPattern = /https:\/\/[^\s<>"']+/g;
+      var lastIndex = 0;
+      var match;
+
+      if (isUser) {
+        bubble.textContent = message;
+      } else {
+        while ((match = linkPattern.exec(message))) {
+          var urlText = match[0];
+          var trailingPunctuation = '';
+          while (/[.,!?;:)]$/.test(urlText)) {
+            trailingPunctuation = urlText.slice(-1) + trailingPunctuation;
+            urlText = urlText.slice(0, -1);
+          }
+          bubble.appendChild(document.createTextNode(message.slice(lastIndex, match.index)));
+          try {
+            var url = new URL(urlText);
+            if (url.protocol !== 'https:') throw new Error('Unsupported link protocol');
+            var link = document.createElement('a');
+            link.href = url.href;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.textContent = urlText;
+            bubble.appendChild(link);
+          } catch (error) {
+            bubble.appendChild(document.createTextNode(urlText));
+          }
+          bubble.appendChild(document.createTextNode(trailingPunctuation));
+          lastIndex = match.index + match[0].length;
+        }
+        bubble.appendChild(document.createTextNode(message.slice(lastIndex)));
+      }
       chatMessages.appendChild(bubble);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -213,27 +244,72 @@
         return "Hi there! I can tell you about Talha's background, skills, projects, or how to contact him.";
       }
 
+      if (/\b(phone|mobile|cell|number|whatsapp number)\b/.test(text)) {
+        return 'Talha’s phone and WhatsApp number is +92 348 015 7976. Message him on WhatsApp: https://wa.me/923480157976';
+      }
+
+      var asksForLinks = /\b(link|links|url|urls|profile|profiles|account|accounts|social)\b/.test(text);
+      if (asksForLinks && /\b(github|git hub|repositories|repos)\b/.test(text)) {
+        return 'GitHub profile: https://github.com/TalhaHabib-hub';
+      }
+      if (asksForLinks && /\b(linkedin|linked in)\b/.test(text)) {
+        return 'LinkedIn profile: https://www.linkedin.com/in/talha-habib-411405410/';
+      }
+      if (asksForLinks && /\b(facebook|fb)\b/.test(text)) {
+        return 'Facebook profile: https://www.facebook.com/talha.habib.844453';
+      }
+      if (asksForLinks && /\b(whatsapp|wa)\b/.test(text)) {
+        return 'WhatsApp chat: https://wa.me/923480157976';
+      }
+      if (asksForLinks && /\b(cv|resume|curriculum vitae)\b/.test(text)) {
+        return 'Download Talha’s CV: https://my-college-portfolio-nu.vercel.app/Talha-Habib-CV.pdf';
+      }
+      if (asksForLinks && /\b(portfolio|website|site)\b/.test(text)) {
+        return 'Portfolio website: https://my-college-portfolio-nu.vercel.app';
+      }
+      if (asksForLinks && /c\+\+|cplusplus|c plus plus/.test(rawText)) {
+        return 'C++ Learning repository: https://github.com/TalhaHabib-hub/C-plus-plus';
+      }
+      if (asksForLinks && /\b(python)\b/.test(text)) {
+        return 'Python Learning repository: https://github.com/TalhaHabib-hub/Python-Learning';
+      }
+      if (asksForLinks && /\b(student ai|assistant platform)\b/.test(text)) {
+        return 'Student AI Assistant Platform repository: https://github.com/TalhaHabib-hub/student_ai_platform';
+      }
+      if (asksForLinks && /\b(online education|education website|lms)\b/.test(text)) {
+        return 'Online Education Website repository: https://github.com/TalhaHabib-hub/OnlineEducationWebsite';
+      }
+      if (asksForLinks && /\b(hindukush|internship|capstone|cca)\b/.test(text)) {
+        return 'HindukushSoft internship repository: https://github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
+      }
+      if (asksForLinks && /\b(learning fullstack mern|mern practice|redux)\b/.test(text)) {
+        return 'Learning FullStack MERN repository: https://github.com/TalhaHabib-hub/Learning-FullStack-MERN';
+      }
+      if (asksForLinks) {
+        return 'Here are Talha’s profile links:\nGitHub: https://github.com/TalhaHabib-hub\nLinkedIn: https://www.linkedin.com/in/talha-habib-411405410/\nFacebook: https://www.facebook.com/talha.habib.844453\nWhatsApp: https://wa.me/923480157976';
+      }
+
       if (/\b(student ai|assistant platform)\b/.test(text)) {
-        return 'The Student AI Assistant Platform is a Laravel + React study tool. It can generate quizzes from notes, extract paper tests, and provide graded feedback using Gemini. Repository: github.com/TalhaHabib-hub/student_ai_platform';
+        return 'The Student AI Assistant Platform is a Laravel + React study tool. It can generate quizzes from notes, extract paper tests, and provide graded feedback using Gemini. Repository: https://github.com/TalhaHabib-hub/student_ai_platform';
       }
       if (/\b(online education|education website|lms)\b/.test(text)) {
-        return 'The Online Education Website is a role-based Laravel + React learning management system with courses, quizzes, payments, reviews, and an admin dashboard. Repository: github.com/TalhaHabib-hub/OnlineEducationWebsite';
+        return 'The Online Education Website is a role-based Laravel + React learning management system with courses, quizzes, payments, reviews, and an admin dashboard. Repository: https://github.com/TalhaHabib-hub/OnlineEducationWebsite';
       }
       if (/\b(hindukush|intern\w*|capstone|cca)\b/.test(text)) {
-        return 'Talha previously interned at HindukushSoft Technologies. His portfolio describes daily tasks and a capstone project, CCA, a full-stack Laravel + React learning platform. Repository: github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
+        return 'Talha previously interned at HindukushSoft Technologies. His portfolio describes daily tasks and a capstone project, CCA, a full-stack Laravel + React learning platform. Repository: https://github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
       }
       if (/\b(learning fullstack mern|mern practice|redux)\b/.test(text)) {
-        return 'The Learning FullStack MERN repository contains front-end and MERN practice projects, including HTML/CSS/JavaScript builds, React, and Redux exercises. Repository: github.com/TalhaHabib-hub/Learning-FullStack-MERN';
+        return 'The Learning FullStack MERN repository contains front-end and MERN practice projects, including HTML/CSS/JavaScript builds, React, and Redux exercises. Repository: https://github.com/TalhaHabib-hub/Learning-FullStack-MERN';
       }
       if (/\b(python learning|object oriented|file i o|oop)\b/.test(text)) {
-        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: github.com/TalhaHabib-hub/Python-Learning';
+        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: https://github.com/TalhaHabib-hub/Python-Learning';
       }
       if (/\b(c\+\+ learning|cplusplus learning|college coursework)\b/.test(rawText) ||
           (/c\+\+|cplusplus|c plus plus/.test(rawText) && /\b(project|repository|coursework|exercises)\b/.test(text))) {
-        return 'His C++ Learning repository contains college coursework and exercises. Repository: github.com/TalhaHabib-hub/C-plus-plus';
+        return 'His C++ Learning repository contains college coursework and exercises. Repository: https://github.com/TalhaHabib-hub/C-plus-plus';
       }
       if (/\b(python|python learning)\b/.test(text) && /\b(project|repository|coursework|exercises)\b/.test(text)) {
-        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: github.com/TalhaHabib-hub/Python-Learning';
+        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: https://github.com/TalhaHabib-hub/Python-Learning';
       }
 
       var technologies = [
@@ -298,7 +374,7 @@
         return 'Talha’s portfolio lists HTML, CSS, JavaScript, PHP, Python, and C++; React, Node.js, Express, Laravel, and Tailwind CSS; and VS Code, Git, GitHub, MySQL, XAMPP, and the Gemini API. MongoDB is also named as part of his MERN stack.';
       }
       if (/\b(projects?|work|portfolio|built|repositories|repos)\b/.test(text)) {
-        return 'Featured projects: Student AI Assistant Platform (Laravel + React study tools using Gemini); Online Education Website (a role-based LMS with courses, quizzes, payments, reviews, and admin dashboard); HindukushSoft internship work (including the CCA capstone); Learning FullStack MERN (HTML/CSS/JS, React, Redux practice); Python Learning; and C++ Learning coursework. Visit github.com/TalhaHabib-hub for repositories.';
+        return 'Featured projects: Student AI Assistant Platform (Laravel + React study tools using Gemini); Online Education Website (a role-based LMS with courses, quizzes, payments, reviews, and admin dashboard); HindukushSoft internship work (including the CCA capstone); Learning FullStack MERN (HTML/CSS/JS, React, Redux practice); Python Learning; and C++ Learning coursework. Visit https://github.com/TalhaHabib-hub for repositories.';
       }
       if (/\b(frontend|front end|website interface|ui)\b/.test(text)) {
         return 'Talha’s portfolio describes his frontend work as building fast, responsive React and MERN interfaces. His tools include HTML, CSS, JavaScript, React, and Tailwind CSS.';
@@ -338,9 +414,9 @@
         var stars = starCount ? starCount.textContent.trim() : '';
         var followers = followerCount ? followerCount.textContent.trim() : '';
         if (repos && repos !== '—' && stars && stars !== '—' && followers && followers !== '—') {
-          return 'Talha’s live GitHub stats currently show ' + repos + ' repositories, ' + stars + ' stars, and ' + followers + ' followers. See the GitHub Activity section or visit github.com/TalhaHabib-hub.';
+          return 'Talha’s live GitHub stats currently show ' + repos + ' repositories, ' + stars + ' stars, and ' + followers + ' followers. See the GitHub Activity section or visit https://github.com/TalhaHabib-hub.';
         }
-        return 'Talha’s portfolio loads repository, stars, language, and follower information live from github.com/TalhaHabib-hub. Visit the GitHub Activity section to see the latest stats.';
+        return 'Talha’s portfolio loads repository, stars, language, and follower information live from https://github.com/TalhaHabib-hub. Visit the GitHub Activity section to see the latest stats.';
       }
       if (/\b(help|what can you|what do you|can you)\b/.test(text)) {
         return 'Ask me about Talha’s background, education, internship, skills, services, a specific technology or project, GitHub activity, location, CV, or contact links.';
