@@ -72,7 +72,7 @@ The generated Tailwind stylesheet is checked in for static hosting. Rebuild it a
 
 ## Deployment
 
-Deployed on [Vercel](https://vercel.com) — any static hosting (Netlify, GitHub Pages, etc.) works just as well. The custom galaxy, hexagon, chart, and motion effects remain in their dedicated CSS files to preserve their rendering and behavior.
+Deployed on [Vercel](https://vercel.com). `vercel.json` runs the Tailwind build during deployment and publishes the project root. In Vercel Project Settings, set the Root Directory to the repository root and the Production Branch to `main`. The custom galaxy, hexagon, chart, and motion effects remain in their dedicated CSS files to preserve their rendering and behavior.
 
 ## License
 
