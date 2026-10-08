@@ -615,3 +615,5 @@ h1, h2, h3 { font-family: var(--font-head); font-weight: 600; line-height: 1.2; 
   .btn-pill { width: 100%; }
   .social-row { justify-content: center; width: 100%; }
 }
+#galaxy { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+body { background: #05060f; }

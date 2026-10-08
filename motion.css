@@ -1,0 +1,87 @@
+/* motion.css - extra movement for the portfolio */
+:root { --accent: #2de2d4; } /* change this to your teal if it looks different */
+
+/* ---------- 1. Flipping profile picture ---------- */
+.flip { display: inline-block; perspective: 1000px; cursor: pointer; animation: floaty 5s ease-in-out infinite; }
+.flip-inner {
+  position: relative; transform-style: preserve-3d;
+  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: intro 1.4s ease-out;                       /* spins in once when the page loads */
+}
+.flip.is-flipped .flip-inner { transform: rotateY(180deg); }
+@media (hover: hover) { .flip:hover .flip-inner { transform: rotateY(180deg); } }
+
+.flip-front, .flip-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flip-front { display: block; }
+.flip-front img { display: block; max-width: 100%; }
+
+.flip-back {
+  position: absolute; inset: 0; transform: rotateY(180deg); overflow: hidden;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 1rem; color: #fff;
+  background:
+    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2px),
+    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
+    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 30%, #3b2a8f 0, #0b0d24 70%);
+  box-shadow: 0 0 30px rgba(45, 226, 212, 0.35);
+}
+.flip-back h3 { margin: 0.2rem 0; font-size: 1.2rem; }
+.flip-back p { margin: 0; font-size: 0.85rem; opacity: 0.85; }
+.flip-back .orb {                                        /* small planet with a spinning ring */
+  position: absolute; width: 46%; aspect-ratio: 1; top: -12%; right: -12%; border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ffd9a0, #b5775a 60%, #5b3a2e);
+  opacity: 0.9; animation: spin 14s linear infinite;
+}
+.flip-back .orb::after {
+  content: ""; position: absolute; inset: -18% -40%; border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%; transform: rotateX(70deg);
+}
+
+@keyframes floaty { 50% { transform: translateY(-10px); } }
+@keyframes intro { from { transform: rotateY(-180deg) scale(0.6); } to { transform: rotateY(0) scale(1); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 2. Icons: float when idle, wiggle on hover ---------- */
+.float-icon { display: inline-block; animation: bob 3.5s ease-in-out infinite; transition: transform 0.3s; }
+.float-icon:hover { transform: scale(1.25) rotate(10deg); }
+@keyframes bob { 50% { translate: 0 -6px; } }           /* "translate" is separate from "transform", so hover still works */
+
+/* ---------- 3. Tilt cards (JS adds the class) ---------- */
+.tilt { will-change: transform; transform-style: preserve-3d; }
+
+/* ---------- 4. Shooting stars ---------- */
+.shooting-star {
+  position: fixed; top: 0; left: 0; width: 130px; height: 2px; z-index: -1; pointer-events: none; opacity: 0;
+  background: linear-gradient(90deg, transparent, #fff);
+  animation: shoot 8s linear infinite;
+}
+@keyframes shoot {
+  0% { opacity: 0; transform: translate(0, 0) rotate(30deg); }
+  2% { opacity: 1; }
+  10% { opacity: 0; transform: translate(420px, 240px) rotate(30deg); }
+  100% { opacity: 0; transform: translate(420px, 240px) rotate(30deg); }
+}
+
+/* ---------- 5. Mouse sparkles ---------- */
+.spark {
+  position: fixed; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 9999;
+  background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  animation: sparkOut 0.8s ease-out forwards;
+}
+@keyframes sparkOut { to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); } }
+
+/* ---------- 6. Scroll progress bar ---------- */
+.scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 10000;
+  background: linear-gradient(90deg, var(--accent), #7a6bff); transform-origin: left; transform: scaleX(0);
+}
+
+/* ---------- 7. Buttons: glow when you point at them ---------- */
+.btn:hover, button:hover, .button:hover { box-shadow: 0 0 22px rgba(45, 226, 212, 0.55); transform: translateY(-3px); }
+
+/* Visitors who asked their device for less motion: turn off only the decorations */
+@media (prefers-reduced-motion: reduce) {
+  .shooting-star, .spark, .float-icon, .flip { animation: none; }
+}
