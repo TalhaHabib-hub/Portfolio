@@ -1,0 +1,113 @@
+/* galaxy-fix.css — load AFTER style.css and motion.css
+   Written against the real selectors in Talha's style.css */
+
+/* 1. Galaxy is the world: transparent body, translucent navy glass panels */
+:root {
+  --panel-a: rgba(10, 10, 34, .28);
+  --panel-b: rgba(16, 16, 46, .30);
+  --field:   rgba(14, 16, 44, .65);
+  --border:  rgba(140, 150, 255, .22);
+  --glass-blur: blur(8px) saturate(1.2);
+}
+html { background: #03030c; }
+body { background: none; }
+
+/* nested cards: no second blur layer (big GPU saving over a live canvas) */
+.panel .service-card, .panel .project-tile, .panel .lang-card {
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: rgba(255, 255, 255, .035);
+}
+.panel .project-tile:hover { background: rgba(47, 230, 221, .10); }
+.project-tile {
+  transition: transform .3s cubic-bezier(.2,.8,.3,1), border-color .3s ease, box-shadow .3s ease;
+}
+
+/* old CSS/DOM starfield + blurred aurora are replaced by the WebGL galaxy */
+.fx-aurora, .fx-star, .fx-shooting-star { display: none !important; }
+#galaxy { display: none; }
+
+/* 2. Hexagon photo: inner hex is a uniformly scaled copy => even rim, image always fills */
+.hero__hex-wrap .hex, .panel--about .hex {
+  position: relative;
+  padding: 0;
+  aspect-ratio: .866 / 1;           /* true regular hexagon */
+}
+.hex__inner {
+  position: absolute;
+  inset: 3.4%;                       /* percent of each side => uniform rim width */
+  width: auto; height: auto;
+  clip-path: var(--clip);
+  -webkit-clip-path: var(--clip);
+}
+.panel--about .hex__inner { inset: 2%; }
+.hex__inner img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: 50% 20%;          /* lower the % to show more of the top of the head */
+}
+
+/* 3. Glow without filter (filter + clip-path gets clipped away and forces repaints) */
+.hex--glow, .hex--outline { filter: none; }
+.hero__hex-wrap { position: relative; isolation: isolate; }
+.hero__hex-wrap::before {
+  content: ""; position: absolute; inset: -18%; z-index: -1; pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(47, 230, 221, .38), transparent 62%);
+}
+
+/* 4. Smooth drift: transform-only, GPU-composited, no rotation shimmer on the clipped edge */
+.hex--drift { animation: hexFloat 7s ease-in-out infinite; will-change: transform; }
+@keyframes hexFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -10px, 0); }
+}
+[data-reveal].is-visible, [data-intro-item].is-visible { will-change: auto; }
+@media (prefers-reduced-motion: reduce) { .hex--drift { animation: none; } }
+
+/* 5. Flip card (built by the new motion.js). Overrides any old .flip rules in motion.css */
+.hero__hex-wrap .flip {
+  position: relative; flex: 0 0 auto; cursor: pointer;
+  width: min(280px, 60vw); aspect-ratio: .866 / 1;
+  perspective: 1100px; -webkit-perspective: 1100px;
+  outline: none;
+}
+.hero__hex-wrap .flip:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 12px; }
+.hero__hex-wrap .flip-inner {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  transition: transform .85s cubic-bezier(.4, .1, .2, 1);
+  will-change: transform;
+}
+.hero__hex-wrap .flip.is-flipped .flip-inner { transform: rotateY(180deg); }
+.hero__hex-wrap .flip .flip-front, .hero__hex-wrap .flip .flip-back {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+}
+.hero__hex-wrap .flip .flip-back { transform: rotateY(180deg); }
+.flip-back .hex__inner {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: .3rem; padding: 1rem;
+  background: radial-gradient(circle at 50% 30%, #3a2a8a 0%, #130f40 55%, #05061a 100%);
+}
+.flip-back h3 { font-size: 1.15rem; }
+.flip-back p { font-size: .8rem; color: var(--text-muted); }
+.flip-orb {
+  width: 54px; height: 54px; border-radius: 50%; margin-bottom: .5rem; position: relative;
+  background: radial-gradient(circle at 32% 30%, #f4dfae, #b99358 55%, #4a3a22 100%);
+  box-shadow: 0 0 22px rgba(255, 210, 140, .35);
+}
+.flip-orb::after {
+  content: ""; position: absolute; left: -40%; right: -40%; top: 42%; height: 16%;
+  border-radius: 50%; border: 2px solid rgba(235, 215, 170, .8); transform: rotate(-18deg);
+}
+/* the old shooting stars are replaced by the WebGL ones */
+.shooting-star { display: none !important; }
+
+/* 6. Content floats IN the galaxy: no heavy cards, no backdrop blur (blur over a live canvas = the stutter) */
+:root { --panel-a: rgba(8, 8, 30, .10); --panel-b: rgba(12, 12, 40, .14); --glass-blur: none; }
+.panel { -webkit-backdrop-filter: none; backdrop-filter: none; border-color: rgba(150, 160, 255, .14);
+  box-shadow: inset 0 0 60px rgba(90, 70, 200, .07); }
+.panel .service-card, .panel .project-tile, .panel .lang-card { background: rgba(255, 255, 255, .02); }
+body { text-shadow: 0 1px 14px rgba(3, 3, 12, .9); }
+.btn-pill { text-shadow: none; }
