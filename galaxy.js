@@ -7,8 +7,8 @@
   'use strict';
   if (!window.THREE) return;
   var T = THREE;
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var mobile = Math.min(innerWidth, innerHeight) < 700;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches || mobile;
 
   /* ---- tweak here ---- */
   var SATURN = { fx: mobile ? 0.80 : 0.82, fy: mobile ? 0.14 : 0.80, size: mobile ? 0.085 : 0.115, parallax: 0.30 };
@@ -278,20 +278,27 @@
     var halfH = tanH * Math.abs(SATURN_Z), S = SATURN.size * 2 * halfH;
     saturn.scale.setScalar(S); U.R.value = S; U.rIn.value = R_IN * S; U.rOut.value = R_OUT * S;
   }
+  var started = false;
   function resize() {
     W = innerWidth; H = innerHeight; renderer.setSize(W, H, false); cam.aspect = W / H; cam.updateProjectionMatrix();
     dc.width = W; dc.height = H; layoutSaturn();
+    if (started && mobile) frame();
   }
   addEventListener('resize', resize);
-  addEventListener('scroll', function () { tsy = window.scrollY || 0; }, { passive: true });
-  addEventListener('pointermove', function (e) { tmx = e.clientX / innerWidth - 0.5; tmy = e.clientY / innerHeight - 0.5; }, { passive: true });
+  if (!mobile) {
+    addEventListener('scroll', function () { tsy = window.scrollY || 0; }, { passive: true });
+    addEventListener('pointermove', function (e) { tmx = e.clientX / innerWidth - 0.5; tmy = e.clientY / innerHeight - 0.5; }, { passive: true });
+  }
 
   /* ---------- performance governor ----------
      Watches real frame times. If the computer can't keep ~37fps it steps down, one stage per 60 frames:
        1) render at 1x pixel ratio   2) draw fewer galaxy/star points   3) "lite" mode: 30fps + CSS extras off
      A fast machine never leaves stage 0, so it keeps full quality. */
   var gov = window.__galaxyGov = { stage: 0, n: 0, slow: 0, born: performance.now(), last: performance.now(), skip: false, tick: false };
-  document.addEventListener('visibilitychange', function () { gov.last = performance.now(); });   // a hidden tab is not a slow tab
+  document.addEventListener('visibilitychange', function () {
+    gov.last = performance.now();
+    if (mobile && started && !document.hidden) frame();
+  });   // a hidden tab is not a slow tab
   function thin(f) { thinnable.forEach(function (o) { o.obj.geometry.setDrawRange(0, Math.floor(o.n * f)); }); }
   function degrade() {
     gov.stage++;
@@ -315,7 +322,7 @@
 
   var clock = new T.Clock(), tmpQ = new T.Quaternion(), tmpV = new T.Vector3(), tmpN = new T.Vector3();
   function frame() {
-    requestAnimationFrame(frame);
+    if (!mobile) requestAnimationFrame(frame);
     if (document.hidden) return;
     var nowMs = performance.now(); govern(nowMs - gov.last); gov.last = nowMs;
     if (gov.skip && (gov.tick = !gov.tick)) return;             // lite mode: draw every second frame
@@ -364,6 +371,7 @@
   function start() {
     var tex = saturnTexture(), rt = ringTexture();
     U.map.value = tex; U.ringMap.value = rt; gov.born = performance.now();
+    started = true;
     resize(); frame(); requestAnimationFrame(function () { cv.style.opacity = 1; });
   }
   // let the page paint first, THEN build the planet textures (they take a moment on a slower CPU)
