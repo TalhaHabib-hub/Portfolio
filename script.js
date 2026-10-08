@@ -206,19 +206,117 @@
     }
 
     function getPortfolioReply(message) {
+      var rawText = message.toLowerCase();
       var text = message.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
 
-      if (/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)) {
+      if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)) {
         return "Hi there! I can tell you about Talha's background, skills, projects, or how to contact him.";
       }
-      if (/\b(skill|technology|technologies|stack|language|framework|tools|react|laravel|mern|node|javascript|php|python|database)\b/.test(text)) {
-        return 'Talha works with React, Node.js, Express, Laravel, PHP, JavaScript, Python, C++, Tailwind CSS, and MySQL. He also builds AI-powered features with Gemini.';
+
+      if (/\b(student ai|assistant platform)\b/.test(text)) {
+        return 'The Student AI Assistant Platform is a Laravel + React study tool. It can generate quizzes from notes, extract paper tests, and provide graded feedback using Gemini. Repository: github.com/TalhaHabib-hub/student_ai_platform';
       }
-      if (/\b(project|work|portfolio|built|student ai|assistant platform|education website|lms|internship)\b/.test(text)) {
-        return 'Some featured work: Student AI Assistant Platform (AI study tools with Laravel + React), an Online Education Website (a Laravel + React learning platform), and full-stack internship work at HindukushSoft. Explore the Projects section for links.';
+      if (/\b(online education|education website|lms)\b/.test(text)) {
+        return 'The Online Education Website is a role-based Laravel + React learning management system with courses, quizzes, payments, reviews, and an admin dashboard. Repository: github.com/TalhaHabib-hub/OnlineEducationWebsite';
       }
-      if (/\b(contact|email|hire|reach|message|whatsapp|linkedin)\b/.test(text)) {
-        return 'You can reach Talha through the Contact section, connect on LinkedIn, or message him on WhatsApp using the links on this page.';
+      if (/\b(hindukush|intern\w*|capstone|cca)\b/.test(text)) {
+        return 'Talha previously interned at HindukushSoft Technologies. His portfolio describes daily tasks and a capstone project, CCA, a full-stack Laravel + React learning platform. Repository: github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
+      }
+      if (/\b(learning fullstack mern|mern practice|redux)\b/.test(text)) {
+        return 'The Learning FullStack MERN repository contains front-end and MERN practice projects, including HTML/CSS/JavaScript builds, React, and Redux exercises. Repository: github.com/TalhaHabib-hub/Learning-FullStack-MERN';
+      }
+      if (/\b(python learning|object oriented|file i o|oop)\b/.test(text)) {
+        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: github.com/TalhaHabib-hub/Python-Learning';
+      }
+      if (/\b(c\+\+ learning|cplusplus learning|college coursework)\b/.test(rawText) ||
+          (/c\+\+|cplusplus|c plus plus/.test(rawText) && /\b(project|repository|coursework|exercises)\b/.test(text))) {
+        return 'His C++ Learning repository contains college coursework and exercises. Repository: github.com/TalhaHabib-hub/C-plus-plus';
+      }
+      if (/\b(python|python learning)\b/.test(text) && /\b(project|repository|coursework|exercises)\b/.test(text)) {
+        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: github.com/TalhaHabib-hub/Python-Learning';
+      }
+
+      var technologies = [
+        {
+          pattern: /c\+\+|cplusplus|c plus plus/,
+          name: 'C++',
+          evidence: 'His portfolio lists C++ among his languages and links a C++ Learning repository containing college coursework and exercises.'
+        },
+        {
+          pattern: /\bpython\b/,
+          name: 'Python',
+          evidence: 'His portfolio lists Python among his languages and links a Python Learning repository covering syntax, data structures, file I/O, and object-oriented programming.'
+        },
+        {
+          pattern: /\b(javascript|js)\b/,
+          name: 'JavaScript',
+          evidence: 'JavaScript is listed among his languages, and his projects include front-end practice, React, Redux, Node.js, and Express.'
+        },
+        {
+          pattern: /\b(typescript|ts)\b/,
+          name: 'TypeScript',
+          evidence: 'TypeScript appears in the live language breakdown of his public GitHub repositories.'
+        },
+        {
+          pattern: /\b(php|laravel)\b/,
+          name: 'PHP and Laravel',
+          evidence: 'His portfolio highlights Laravel and PHP, with Laravel + React projects including a learning platform and internship capstone.'
+        },
+        {
+          pattern: /\b(react|mern|node|express|mongodb|redux)\b/,
+          name: 'the MERN stack',
+          evidence: 'His portfolio highlights MERN development and React, Node.js, Express, and MongoDB, including practice projects and full-stack applications.'
+        },
+        {
+          pattern: /\b(html|html5|css|css3|tailwind)\b/,
+          name: 'frontend development',
+          evidence: 'His portfolio lists HTML, CSS, and Tailwind CSS and describes building responsive React/MERN interfaces.'
+        },
+        {
+          pattern: /\b(mysql|sql|database)\b/,
+          name: 'databases',
+          evidence: 'MySQL is listed among his tools, and his backend work includes databases and REST APIs.'
+        },
+        {
+          pattern: /\b(gemini|artificial intelligence|ai)\b/,
+          name: 'AI integration',
+          evidence: 'He is building toward a career in AI and has used Gemini for study tools such as quiz generation, paper-test extraction, and graded feedback.'
+        }
+      ];
+      var technology = technologies.find(function (item) { return item.pattern.test(rawText); });
+      if (technology) {
+        return technology.evidence + ' The portfolio shows related coursework or projects, but doesn’t claim a formal proficiency level.';
+      }
+
+      if (/\b(all about|all (the )?(information|details)|everything about|tell me about|about me|who is|about talha|about yourself|background|bio|biography)\b/.test(text)) {
+        return 'Talha Habib is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works across MERN and Laravel, previously interned at HindukushSoft Technologies building CRUD apps and REST APIs, and is working toward a career in AI. His portfolio features an AI study assistant, a learning management system, internship work, and repositories for learning MERN, Python, and C++. He describes himself as consistent, a fast learner, detail-oriented, self-taught, growth-minded, and a hands-on builder.';
+      }
+      if (/\b(name|who are you|what do you know|everything|tell me everything)\b/.test(text)) {
+        return 'His name is Talha Habib. He is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works with MERN and Laravel, has internship experience at HindukushSoft Technologies, and is building toward a career in AI.';
+      }
+      if (/\b(skills?|technolog(y|ies)|tech stack|programming languages?|frameworks?|tools)\b/.test(text)) {
+        return 'Talha’s portfolio lists HTML, CSS, JavaScript, PHP, Python, and C++; React, Node.js, Express, Laravel, and Tailwind CSS; and VS Code, Git, GitHub, MySQL, XAMPP, and the Gemini API. MongoDB is also named as part of his MERN stack.';
+      }
+      if (/\b(projects?|work|portfolio|built|repositories|repos)\b/.test(text)) {
+        return 'Featured projects: Student AI Assistant Platform (Laravel + React study tools using Gemini); Online Education Website (a role-based LMS with courses, quizzes, payments, reviews, and admin dashboard); HindukushSoft internship work (including the CCA capstone); Learning FullStack MERN (HTML/CSS/JS, React, Redux practice); Python Learning; and C++ Learning coursework. Visit github.com/TalhaHabib-hub for repositories.';
+      }
+      if (/\b(frontend|front end|website interface|ui)\b/.test(text)) {
+        return 'Talha’s portfolio describes his frontend work as building fast, responsive React and MERN interfaces. His tools include HTML, CSS, JavaScript, React, and Tailwind CSS.';
+      }
+      if (/\b(backend|back end|api|server|database)\b/.test(text)) {
+        return 'Talha’s portfolio highlights Laravel and Node.js backend work, including authentication, databases, CRUD applications, and clean REST APIs.';
+      }
+      if (/\b(service|offer|provide|hire|freelance)\b/.test(text)) {
+        return 'The services listed on Talha’s portfolio are frontend development (responsive React/MERN interfaces), backend development (Laravel and Node APIs, auth, databases, REST endpoints), and AI integration (Gemini-powered quizzes, chat, and content tools).';
+      }
+      if (/\b(trait|strength|quality|personality|fast learner|detail oriented|self taught|consistent|growth minded)\b/.test(text)) {
+        return 'Talha’s portfolio describes him as consistent, a fast learner, detail-oriented, self-taught, growth-minded, and a hands-on builder.';
+      }
+      if (/\b(good at|proficien|expert|experience with|know|use|learn)\b/.test(text)) {
+        return 'I can share what Talha’s portfolio documents, but it doesn’t give formal skill ratings. It lists his technologies and links to coursework, practice projects, and applications. Ask about a specific technology or project for details.';
+      }
+      if (/\b(contact|email|reach|message|whatsapp|linkedin|facebook)\b/.test(text)) {
+        return 'You can use the Contact form on this page, message Talha on WhatsApp at wa.me/923480157976, connect on LinkedIn at linkedin.com/in/talha-habib-411405410/, or find him on GitHub as TalhaHabib-hub and Facebook as talha.habib.844453.';
       }
       if (/\b(cv|resume|curriculum vitae)\b/.test(text)) {
         return 'You can download Talha’s CV using the “Download CV” button near the top of the page or in the footer.';
@@ -226,14 +324,29 @@
       if (/\b(location|where|based|chitral|pakistan)\b/.test(text)) {
         return 'Talha is based in Chitral, Pakistan.';
       }
-      if (/\b(who|about|yourself|talha|background|study|student|education|experience|intern)\b/.test(text)) {
-        return 'Talha Habib is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works with the MERN stack and Laravel, and previously interned at HindukushSoft Technologies.';
+      if (/\b(student|education|study|college|university|degree)\b/.test(text)) {
+        return 'The portfolio identifies Talha as a Computer Science student. It doesn’t specify his institution or degree details.';
+      }
+      if (/\b(career|future|goal|aspiration)\b/.test(text)) {
+        return 'Talha’s portfolio says he is building toward a career in AI, while working as a full-stack developer across MERN and Laravel.';
+      }
+      if (/\b(github|followers|stars|repositories|activity|stats)\b/.test(text)) {
+        var repoCount = document.getElementById('ghRepos');
+        var starCount = document.getElementById('ghStars');
+        var followerCount = document.getElementById('ghFollow');
+        var repos = repoCount ? repoCount.textContent.trim() : '';
+        var stars = starCount ? starCount.textContent.trim() : '';
+        var followers = followerCount ? followerCount.textContent.trim() : '';
+        if (repos && repos !== '—' && stars && stars !== '—' && followers && followers !== '—') {
+          return 'Talha’s live GitHub stats currently show ' + repos + ' repositories, ' + stars + ' stars, and ' + followers + ' followers. See the GitHub Activity section or visit github.com/TalhaHabib-hub.';
+        }
+        return 'Talha’s portfolio loads repository, stars, language, and follower information live from github.com/TalhaHabib-hub. Visit the GitHub Activity section to see the latest stats.';
       }
       if (/\b(help|what can you|what do you|can you)\b/.test(text)) {
-        return 'Ask me about Talha’s background, skills and tech stack, projects, location, CV, or contact details.';
+        return 'Ask me about Talha’s background, education, internship, skills, services, a specific technology or project, GitHub activity, location, CV, or contact links.';
       }
 
-      return 'I’m a portfolio helper, so I can answer questions about Talha’s background, skills, projects, location, CV, and contact details. Try asking about one of those!';
+      return 'I can answer questions about the information published on Talha’s portfolio: his background, education, internship, skills, projects, services, GitHub activity, location, CV, and contact links. Try asking about one of those, or name a technology or project.';
     }
 
     function submitChatMessage(message) {
