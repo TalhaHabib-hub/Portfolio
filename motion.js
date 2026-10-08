@@ -14,13 +14,47 @@
   var SPOT_CARDS = '.service-card, .lang-card';                   // cards with a cursor spotlight
   var MAGNETIC = '.btn-pill, .social-row a';                      // things that lean toward the mouse
   var TITLES = '.panel-title, .panel--about h2';                  // headings whose words rise in
-  var BACK_NAME = 'Talha Habib';
-  var BACK_ROLE = 'MERN & Laravel Developer';
-  var BACK_PLACE = 'Chitral, Pakistan';
+  var HEX_FACES = [
+    {
+      className: 'hex-face--about',
+      icon: 'bx-user',
+      eyebrow: 'A LITTLE ABOUT ME',
+      title: 'CS Student',
+      text: 'Full-stack developer building toward a career in AI.'
+    },
+    {
+      className: 'hex-face--stack',
+      icon: 'bx-code-alt',
+      eyebrow: 'MY TOOLKIT',
+      title: 'MERN + Laravel',
+      text: 'React, Node.js, Express, MongoDB and Laravel.'
+    },
+    {
+      className: 'hex-face--experience',
+      icon: 'bx-briefcase',
+      eyebrow: 'EXPERIENCE',
+      title: 'HindukushSoft',
+      text: 'Internship experience building CRUD apps and REST APIs.'
+    },
+    {
+      className: 'hex-face--ai',
+      icon: 'bx-bulb',
+      eyebrow: 'WHAT I AM BUILDING',
+      title: 'AI for learning',
+      text: 'Gemini-powered study tools, quizzes and feedback.'
+    },
+    {
+      className: 'hex-face--home',
+      icon: 'bx-map',
+      eyebrow: 'PROUDLY BASED IN',
+      title: 'Chitral, Pakistan',
+      text: 'Turning ideas into useful products, end to end.'
+    }
+  ];
   var TYPE_ROLES = ['Full-Stack Developer', 'MERN Developer', 'Laravel Developer', 'Future AI Engineer']; // [] = no typing
   var COLORS = ['#ffffff'];
 
-  // ---------- 1. Flip: the WHOLE hexagon flips (clip-path stays on the faces, never on the rotating part) ----------
+  // ---------- 1. Rotating six-face introduction ----------
   var hex = document.querySelector(FLIP_TARGET);
   if (hex) {
     var flip = document.createElement('div');
@@ -29,48 +63,49 @@
       hex.classList.remove('hex--drift');
       flip.classList.add('hex--drift');
     }
-    var inner = document.createElement('div');
-    inner.className = 'flip-inner';
-    var spinner = document.createElement('div');
-    spinner.className = 'flip-spinner';
-    var back = document.createElement('div');
-    back.className = 'flip-back hex';
-    back.innerHTML =
-      '<div class="hex__inner"><span class="flip-orb"></span><h3>' + BACK_NAME + '</h3><p>' +
-      BACK_ROLE + '</p><p>' + BACK_PLACE + '</p></div>';
+    var carousel = document.createElement('div');
+    carousel.className = 'hex-carousel';
 
     hex.replaceWith(flip);
-    flip.appendChild(spinner);
-    spinner.appendChild(inner);
-    hex.classList.add('flip-front');
-    inner.append(hex, back);
+    flip.setAttribute('role', 'group');
+    flip.setAttribute('aria-roledescription', 'rotating hexagon');
+    flip.setAttribute('aria-label', 'Meet Talha Habib: a computer science student and full-stack developer from Chitral, Pakistan.');
+    flip.appendChild(carousel);
 
-    flip.tabIndex = 0;
-    flip.setAttribute('role', 'button');
-    flip.setAttribute('aria-label', 'Flip photo card');
-    var pinned = false;
-    var hovering = false;
-    var setFlip = function (on) { flip.classList.toggle('is-flipped', on); flip.setAttribute('aria-pressed', on ? 'true' : 'false'); };
-    if (canHover) {
-      flip.addEventListener('pointerenter', function () { hovering = true; setFlip(true); });
-      flip.addEventListener('pointerleave', function () { hovering = false; setFlip(pinned); });
-      flip.addEventListener('click', function () {
-        pinned = !pinned;
-        setFlip(pinned);
-      });
-    } else {
-      flip.addEventListener('click', function () { setFlip(!flip.classList.contains('is-flipped')); });
-    }
-    flip.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        if (canHover) {
-          pinned = !pinned;
-          setFlip(pinned);
-        } else {
-          setFlip(!flip.classList.contains('is-flipped'));
-        }
-      }
+    var welcome = document.createElement('div');
+    welcome.className = 'hex-welcome';
+    welcome.innerHTML = '<p class="hex-welcome__eyebrow">HELLO, I AM</p><h2>Talha Habib</h2><p>Full-Stack Developer</p>';
+    hex.classList.remove('hex--drift');
+    hex.classList.add('carousel-face', 'flip-front');
+    hex.style.setProperty('--face-index', 0);
+    hex.setAttribute('aria-label', 'Welcome, I am Talha Habib, a full-stack developer.');
+    var photoContent = hex.querySelector('.hex__inner');
+    if (photoContent) photoContent.appendChild(welcome);
+    carousel.appendChild(hex);
+
+    HEX_FACES.forEach(function (faceData, index) {
+      var face = document.createElement('div');
+      face.className = 'hex carousel-face ' + faceData.className;
+      face.style.setProperty('--face-index', index + 1);
+      face.setAttribute('aria-label', faceData.eyebrow + ': ' + faceData.title + '. ' + faceData.text);
+
+      var content = document.createElement('div');
+      content.className = 'hex__inner hex-face__content';
+      var icon = document.createElement('i');
+      icon.className = 'bx ' + faceData.icon;
+      icon.setAttribute('aria-hidden', 'true');
+      var eyebrow = document.createElement('p');
+      eyebrow.className = 'hex-face__eyebrow';
+      eyebrow.textContent = faceData.eyebrow;
+      var title = document.createElement('h2');
+      title.textContent = faceData.title;
+      var text = document.createElement('p');
+      text.className = 'hex-face__text';
+      text.textContent = faceData.text;
+
+      content.append(icon, eyebrow, title, text);
+      face.appendChild(content);
+      carousel.appendChild(face);
     });
 
     // little tilted orbit ring with a moon, behind the photo

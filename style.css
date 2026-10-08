@@ -26,9 +26,8 @@ html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { animation: none !important; transition: none !important; }
-  .hero__hex-wrap .flip-spinner { animation: cardRevolve 12s linear infinite !important; }
-  .hero__hex-wrap .flip-inner { transition: transform .85s cubic-bezier(.4, .1, .2, 1) !important; }
-  .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before { animation: rimSpin 6s linear infinite !important; }
+  .hero__hex-wrap .hex-carousel { animation: hexCarouselSpin 30s linear infinite !important; }
+  .hero__hex-wrap .carousel-face::before { animation: rimSpin 6s linear infinite !important; }
   .fx-star, .fx-shooting-star { display: none; }
 }
 

@@ -65,42 +65,78 @@ body { background: none; }
 [data-reveal].is-visible, [data-intro-item].is-visible { will-change: auto; }
 @media (prefers-reduced-motion: reduce) { .hex--drift { animation: none; } }
 
-/* 5. Flip card (built by the new motion.js). Overrides any old .flip rules in motion.css */
+/* 5. Rotating 3D hexagon: six hex faces orbit the shared center axis. */
 .hero__hex-wrap .flip {
-  position: relative; flex: 0 0 auto; cursor: pointer;
+  position: relative; flex: 0 0 auto;
   width: min(280px, 60vw); aspect-ratio: .866 / 1;
-  perspective: 1100px; -webkit-perspective: 1100px;
+  perspective: 1800px; -webkit-perspective: 1800px;
   outline: none;
 }
-.hero__hex-wrap .flip:focus-visible { outline: 2px solid var(--accent); outline-offset: 8px; border-radius: 12px; }
-.hero__hex-wrap .flip-inner {
+.hero__hex-wrap .hex-carousel {
   position: absolute; inset: 0; width: 100%; height: 100%;
   transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
-  transition: transform .85s cubic-bezier(.4, .1, .2, 1);
   will-change: transform;
 }
-.hero__hex-wrap .flip-spinner { width: 100%; height: 100%; }
-.hero__hex-wrap .flip.is-flipped .flip-inner { transform: rotateY(180deg); }
-.hero__hex-wrap .flip .flip-front, .hero__hex-wrap .flip .flip-back {
+.hero__hex-wrap .carousel-face {
   position: absolute; inset: 0; width: 100%; height: 100%;
+  aspect-ratio: auto; padding: 0;
+  transform: rotateY(calc(var(--face-index, 0) * 60deg)) translateZ(calc(min(280px, 60vw) * .5));
   -webkit-backface-visibility: hidden; backface-visibility: hidden;
 }
-.hero__hex-wrap .flip .flip-back { transform: rotateY(180deg); }
-.flip-back .hex__inner {
+.hero__hex-wrap .flip-front {
+  transform: rotateY(calc(var(--face-index, 0) * 60deg)) translateZ(calc(min(280px, 60vw) * .75));
+}
+.hero__hex-wrap .carousel-face .hex__inner {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; gap: .3rem; padding: 1rem;
-  background: radial-gradient(circle at 50% 30%, #3a2a8a 0%, #130f40 55%, #05061a 100%);
+  text-align: center; gap: .5rem; padding: 1.5rem 1rem;
+  color: #fff;
+  background: radial-gradient(circle at 50% 30%, rgba(58, 42, 138, .98) 0%, rgba(19, 15, 64, .98) 58%, rgba(5, 6, 26, .98) 100%);
 }
-.flip-back h3 { font-size: 1.15rem; }
-.flip-back p { font-size: .8rem; color: var(--text-muted); }
-.flip-orb {
-  width: 54px; height: 54px; border-radius: 50%; margin-bottom: .5rem; position: relative;
-  background: radial-gradient(circle at 32% 30%, #f4dfae, #b99358 55%, #4a3a22 100%);
-  box-shadow: 0 0 22px rgba(255, 210, 140, .35);
+.hex-face__content > i { font-size: 2rem; color: #fff; text-shadow: 0 0 18px rgba(255, 255, 255, .75); }
+.hex-face__eyebrow, .hex-welcome__eyebrow {
+  font-size: .58rem; font-weight: 700; letter-spacing: .14em; line-height: 1.4;
+  color: rgba(255, 255, 255, .72);
 }
-.flip-orb::after {
-  content: ""; position: absolute; left: -40%; right: -40%; top: 42%; height: 16%;
-  border-radius: 50%; border: 2px solid rgba(235, 215, 170, .8); transform: rotate(-18deg);
+.hex-face__content h2 { font-size: 1.08rem; line-height: 1.2; text-wrap: balance; }
+.hex-face__text, .hex-welcome > p:last-child {
+  max-width: 25ch; font-size: .7rem; line-height: 1.5; color: rgba(255, 255, 255, .82);
+}
+.hex-face--stack .hex-face__content { background: radial-gradient(circle at 50% 30%, rgba(23, 91, 102, .98), rgba(8, 24, 47, .98) 72%); }
+.hex-face--experience .hex-face__content { background: radial-gradient(circle at 50% 30%, rgba(99, 60, 35, .98), rgba(35, 20, 31, .98) 72%); }
+.hex-face--ai .hex-face__content { background: radial-gradient(circle at 50% 30%, rgba(66, 49, 134, .98), rgba(20, 17, 58, .98) 72%); }
+.hex-face--home .hex-face__content { background: radial-gradient(circle at 50% 30%, rgba(33, 83, 71, .98), rgba(8, 29, 39, .98) 72%); }
+.hex-welcome {
+  position: absolute; inset: auto 0 9%; z-index: 2; padding: 2.5rem .6rem .6rem;
+  text-align: center;
+  background: linear-gradient(transparent, rgba(3, 3, 12, .84) 35%, rgba(3, 3, 12, .9));
+}
+.hex-welcome h2 { margin: .12rem 0; font-size: 1.15rem; line-height: 1.2; }
+.hero__hex-wrap .flip-front .hex__inner {
+  position: absolute; inset: 3.4%; width: auto; height: auto;
+  clip-path: var(--clip); -webkit-clip-path: var(--clip);
+}
+.hero__hex-wrap .flip-front .hex__inner img {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; object-position: 50% 20%;
+}
+.hero__hex-wrap .carousel-face.flip-front::before { pointer-events: none; }
+.flip-front .hex-welcome { pointer-events: none; }
+.hex-face__content { overflow: hidden; }
+.hex-face__content > * { position: relative; z-index: 1; }
+.hex-face__content::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, .9) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 32%, rgba(255, 255, 255, .65) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 34% 78%, rgba(255, 255, 255, .55) 0 1px, transparent 1.5px);
+}
+@media (max-width: 420px) {
+  .hero__hex-wrap .carousel-face .hex__inner { gap: .25rem; padding: .5rem .35rem; }
+  .hex-face__content > i { font-size: 1.3rem; }
+  .hex-face__eyebrow, .hex-welcome__eyebrow { font-size: .43rem; }
+  .hex-face__content h2 { font-size: .78rem; }
+  .hex-face__text, .hex-welcome > p:last-child { font-size: .55rem; line-height: 1.35; }
+  .hex-welcome h2 { font-size: .98rem; }
 }
 /* the old shooting stars are replaced by the WebGL ones */
 .shooting-star { display: none !important; }

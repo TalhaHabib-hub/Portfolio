@@ -14,14 +14,14 @@
    1. HERO PHOTO — spinning neon rim, pulsing glow, orbiting moon
    ============================================================ */
 
-/* A white highlight circles the hexagon rim. */
-.hero__hex-wrap .flip-front, .hero__hex-wrap .flip-back { overflow: hidden; background: #0b0d24; }
-.hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before {
+/* A white highlight circles each face as the hexagon rotates. */
+.hero__hex-wrap .carousel-face { overflow: hidden; background: #0b0d24; }
+.hero__hex-wrap .carousel-face::before {
   content: ""; position: absolute; inset: -45%; z-index: 0;
   background: conic-gradient(from 0deg, transparent 0 68%, rgba(255,255,255,.22) 72%, #fff 76%, transparent 82% 100%);
   animation: rimSpin 6s linear infinite;
 }
-.hero__hex-wrap .flip-front .hex__inner, .hero__hex-wrap .flip-back .hex__inner { z-index: 1; }
+.hero__hex-wrap .carousel-face .hex__inner { z-index: 1; }
 @keyframes rimSpin { to { transform: rotate(360deg); } }
 
 /* same rotating rim on the About photo */
@@ -60,42 +60,14 @@
 }
 @keyframes orbitSpin { to { transform: rotate(360deg); } }
 
-/* ---- the flip card ---- */
-.flip { display: inline-block; cursor: pointer; }
-.flip-spinner {
+/* ---- the six-face 3D hexagon ---- */
+.flip { display: inline-block; }
+.hex-carousel {
   position: absolute; inset: 0;
   transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
-  animation: cardRevolve 12s linear infinite;
+  animation: hexCarouselSpin 30s linear infinite;
 }
-@keyframes cardRevolve { to { transform: rotateY(360deg); } }
-
-/* back of the card: twinkling stars, a bobbing planet, and a light sweep (only run while flipped) */
-.flip-back .hex__inner { position: absolute; overflow: hidden; }
-.flip-back .hex__inner::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background:
-    radial-gradient(circle at 18% 22%, #fff 0 1px, transparent 2px),
-    radial-gradient(circle at 78% 18%, #fff 0 1.2px, transparent 2.4px),
-    radial-gradient(circle at 62% 46%, #cfe 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 70%, #fff 0 1.2px, transparent 2.4px),
-    radial-gradient(circle at 84% 78%, #fff 0 1px, transparent 2px),
-    radial-gradient(circle at 12% 52%, #ffe 0 1px, transparent 2px),
-    radial-gradient(circle at 50% 90%, #fff 0 1px, transparent 2px);
-  animation: twinkle 2.6s ease-in-out infinite alternate; animation-play-state: paused;
-}
-.flip-back .hex__inner::after {
-  content: ""; position: absolute; inset: -20% -60%; pointer-events: none;
-  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, .20) 50%, transparent 58%);
-  transform: translateX(-100%);
-  animation: sweep 3.8s ease-in-out infinite; animation-play-state: paused;
-}
-.flip-back .flip-orb { animation: bob 3.2s ease-in-out infinite; animation-play-state: paused; }
-.flip.is-flipped .flip-back .hex__inner::before,
-.flip.is-flipped .flip-back .hex__inner::after,
-.flip.is-flipped .flip-back .flip-orb { animation-play-state: running; }
-@keyframes twinkle { from { opacity: .35; } to { opacity: 1; } }
-@keyframes sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
-@keyframes bob { 50% { translate: 0 -6px; } }
+@keyframes hexCarouselSpin { to { transform: rotateY(360deg); } }
 
 /* ============================================================
    2. TEXT — shimmering name, typing role, words that rise in
@@ -193,7 +165,7 @@
    6. SAFETY NETS
    ============================================================ */
 /* slow computer detected by galaxy.js -> keep the page smooth, drop only the decorations */
-.lite .orbit, .lite .flip-back .hex__inner::after { display: none; }
+.lite .orbit { display: none; }
 .lite .hero__name { animation: none; }
 .lite .hero__hex-wrap::before { animation: none; }
 .lite .float-icon { animation: none; }
@@ -202,6 +174,6 @@
 @media (prefers-reduced-motion: reduce) {
   .orbit { display: none; }
   .hero__name { animation: none; }
-  .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before, .panel--about .hex::before, .hero__hex-wrap::before, .float-icon { animation: none; }
+  .panel--about .hex::before, .hero__hex-wrap::before, .float-icon { animation: none; }
   .split .w { opacity: 1; transform: none; transition: none; }
 }
