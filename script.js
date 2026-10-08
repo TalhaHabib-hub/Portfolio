@@ -177,4 +177,95 @@
         });
     });
   }
+
+  /* ---------- Portfolio chat helper ---------- */
+  var chatPanel = document.getElementById('portfolioChatPanel');
+  var chatToggle = document.getElementById('portfolioChatToggle');
+  var chatClose = document.getElementById('portfolioChatClose');
+  var chatForm = document.getElementById('portfolioChatForm');
+  var chatInput = document.getElementById('portfolioChatInput');
+  var chatMessages = document.getElementById('portfolioChatMessages');
+
+  if (chatPanel && chatToggle && chatClose && chatForm && chatInput && chatMessages) {
+    function setChatOpen(isOpen) {
+      chatPanel.hidden = !isOpen;
+      chatToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      chatToggle.setAttribute('aria-label', isOpen ? 'Close portfolio assistant' : 'Open portfolio assistant');
+      chatToggle.innerHTML = isOpen
+        ? "<i class='bx bx-x' aria-hidden='true'></i><span>Close</span>"
+        : "<i class='bx bx-message-rounded-dots' aria-hidden='true'></i><span>Ask me</span>";
+      if (isOpen) chatInput.focus();
+    }
+
+    function addChatMessage(message, isUser) {
+      var bubble = document.createElement('div');
+      bubble.className = 'portfolio-chat__message portfolio-chat__message--' + (isUser ? 'user' : 'assistant');
+      bubble.textContent = message;
+      chatMessages.appendChild(bubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getPortfolioReply(message) {
+      var text = message.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
+
+      if (/\b(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)) {
+        return "Hi there! I can tell you about Talha's background, skills, projects, or how to contact him.";
+      }
+      if (/\b(skill|technology|technologies|stack|language|framework|tools|react|laravel|mern|node|javascript|php|python|database)\b/.test(text)) {
+        return 'Talha works with React, Node.js, Express, Laravel, PHP, JavaScript, Python, C++, Tailwind CSS, and MySQL. He also builds AI-powered features with Gemini.';
+      }
+      if (/\b(project|work|portfolio|built|student ai|assistant platform|education website|lms|internship)\b/.test(text)) {
+        return 'Some featured work: Student AI Assistant Platform (AI study tools with Laravel + React), an Online Education Website (a Laravel + React learning platform), and full-stack internship work at HindukushSoft. Explore the Projects section for links.';
+      }
+      if (/\b(contact|email|hire|reach|message|whatsapp|linkedin)\b/.test(text)) {
+        return 'You can reach Talha through the Contact section, connect on LinkedIn, or message him on WhatsApp using the links on this page.';
+      }
+      if (/\b(cv|resume|curriculum vitae)\b/.test(text)) {
+        return 'You can download Talha’s CV using the “Download CV” button near the top of the page or in the footer.';
+      }
+      if (/\b(location|where|based|chitral|pakistan)\b/.test(text)) {
+        return 'Talha is based in Chitral, Pakistan.';
+      }
+      if (/\b(who|about|yourself|talha|background|study|student|education|experience|intern)\b/.test(text)) {
+        return 'Talha Habib is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works with the MERN stack and Laravel, and previously interned at HindukushSoft Technologies.';
+      }
+      if (/\b(help|what can you|what do you|can you)\b/.test(text)) {
+        return 'Ask me about Talha’s background, skills and tech stack, projects, location, CV, or contact details.';
+      }
+
+      return 'I’m a portfolio helper, so I can answer questions about Talha’s background, skills, projects, location, CV, and contact details. Try asking about one of those!';
+    }
+
+    function submitChatMessage(message) {
+      var question = message.trim();
+      if (!question) return;
+      addChatMessage(question, true);
+      addChatMessage(getPortfolioReply(question), false);
+      chatInput.value = '';
+      chatInput.focus();
+    }
+
+    chatToggle.addEventListener('click', function () {
+      setChatOpen(chatPanel.hidden);
+    });
+    chatClose.addEventListener('click', function () {
+      setChatOpen(false);
+      chatToggle.focus();
+    });
+    chatForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submitChatMessage(chatInput.value);
+    });
+    chatPanel.querySelectorAll('[data-chat-prompt]').forEach(function (button) {
+      button.addEventListener('click', function () {
+        submitChatMessage(button.getAttribute('data-chat-prompt') || '');
+      });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !chatPanel.hidden) {
+        setChatOpen(false);
+        chatToggle.focus();
+      }
+    });
+  }
 })();

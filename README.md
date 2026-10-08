@@ -15,6 +15,7 @@ This is Talha Habib's personal portfolio, showcasing projects, skills, and live 
 - **Projects** — a grid of linked GitHub repos
 - **Languages, Frameworks & Tools** — icon grid of the stack in use
 - **Contact form** — powered by [Formspree](https://formspree.io)
+- **Portfolio assistant** — floating chat helper that answers common questions using built-in portfolio information, with no API key or external AI service
 - Smooth scroll-reveal animations, continuous motion effects, and a responsive two-column layout
 
 ## Tech Stack
@@ -37,7 +38,7 @@ Portfolio/
 ├── tailwind.css                   # Generated stylesheet served by the site
 ├── style.css                      # Portfolio component and layout styles
 ├── motion.css                     # Custom continuous motion and visual effects
-├── script.js                      # Scroll-reveal, nav toggle, form handling, etc.
+├── script.js                      # Scroll-reveal, nav toggle, form handling, portfolio assistant, etc.
 ├── github-activity.js             # Fetches and renders live GitHub stats
 ├── github-activity.css            # Styles for the GitHub activity section
 ├── github-activity-chart-fix.css  # Layout/rendering fixes for the activity chart
@@ -69,6 +70,7 @@ The generated Tailwind stylesheet is checked in for static hosting. Rebuild it a
 
 - The contact form already posts to a live [Formspree](https://formspree.io) endpoint configured in `index.html` — if you fork this, swap in your own Formspree form ID to make it functional for you.
 - The GitHub Activity section fetches data live from the GitHub API for the `TalhaHabib-hub` account — update the username in `github-activity.js` if you fork this for your own use.
+- The portfolio assistant uses local keyword-based responses; it is not a generative AI chatbot.
 
 ## Deployment
 

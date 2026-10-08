@@ -352,6 +352,41 @@
   </div>
 </footer>
 
+<section class="portfolio-chat" id="portfolioChat" aria-label="Portfolio assistant">
+  <div class="portfolio-chat__panel" id="portfolioChatPanel" aria-labelledby="portfolioChatTitle" hidden>
+    <div class="portfolio-chat__header">
+      <div class="portfolio-chat__avatar" aria-hidden="true"><i class="bx bx-bot"></i></div>
+      <div class="portfolio-chat__heading">
+        <h2 id="portfolioChatTitle">Talha's Assistant</h2>
+        <p><span class="portfolio-chat__online"></span> Here to help</p>
+      </div>
+      <button class="portfolio-chat__close" id="portfolioChatClose" type="button" aria-label="Close chat">
+        <i class="bx bx-x"></i>
+      </button>
+    </div>
+    <div class="portfolio-chat__messages" id="portfolioChatMessages" role="log" aria-live="polite" aria-relevant="additions">
+      <div class="portfolio-chat__message portfolio-chat__message--assistant">
+        Hi! I'm Talha's portfolio assistant. Ask me about his skills, projects, or how to get in touch.
+      </div>
+    </div>
+    <div class="portfolio-chat__suggestions" aria-label="Suggested questions">
+      <button type="button" data-chat-prompt="What projects has Talha built?">Projects</button>
+      <button type="button" data-chat-prompt="What technologies does Talha use?">Tech stack</button>
+      <button type="button" data-chat-prompt="How can I contact Talha?">Contact</button>
+    </div>
+    <form class="portfolio-chat__form" id="portfolioChatForm">
+      <label class="portfolio-chat__sr-only" for="portfolioChatInput">Ask Talha's assistant a question</label>
+      <input id="portfolioChatInput" name="message" type="text" placeholder="Ask me anything..." autocomplete="off" required>
+      <button type="submit" aria-label="Send message"><i class="bx bx-send"></i></button>
+    </form>
+    <p class="portfolio-chat__note">Portfolio info only · No external AI service</p>
+  </div>
+  <button class="portfolio-chat__toggle" id="portfolioChatToggle" type="button" aria-label="Open portfolio assistant" aria-expanded="false" aria-controls="portfolioChatPanel">
+    <i class="bx bx-message-rounded-dots" aria-hidden="true"></i>
+    <span>Ask me</span>
+  </button>
+</section>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="galaxy.js"></script>
 <script src="script.js"></script>
