@@ -1,87 +1,203 @@
-/* motion.css - extra movement for the portfolio */
-:root { --accent: #2de2d4; } /* change this to your teal if it looks different */
+/* motion.css — movement & glow for the galaxy portfolio
+   Load order in index.html (unchanged): style.css -> motion.css -> galaxy-fix.css
+   Everything here animates only transform / opacity (GPU-friendly) so it stays smooth on a Core i5.
+   If the page ever runs slow, galaxy.js adds class "lite" to <html> and the heavy extras switch off. */
 
-/* ---------- 1. Flipping profile picture ---------- */
-.flip { display: inline-block; perspective: 1000px; cursor: pointer; animation: floaty 5s ease-in-out infinite; }
-.flip-inner {
-  position: relative; transform-style: preserve-3d;
-  transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
-  animation: intro 1.4s ease-out;                       /* spins in once when the page loads */
+:root {
+  --accent: #2fe6dd;      /* same teal as style.css */
+  --violet: #7a6bff;
+  --pink:   #ff7ab8;
+  --gold:   #ffd27a;
 }
-.flip.is-flipped .flip-inner { transform: rotateY(180deg); }
-@media (hover: hover) { .flip:hover .flip-inner { transform: rotateY(180deg); } }
 
-.flip-front, .flip-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.flip-front { display: block; }
-.flip-front img { display: block; max-width: 100%; }
+/* ============================================================
+   1. HERO PHOTO — spinning neon rim, pulsing glow, orbiting moon
+   ============================================================ */
 
-.flip-back {
-  position: absolute; inset: 0; transform: rotateY(180deg); overflow: hidden;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center; padding: 1rem; color: #fff;
+/* the rim of the hexagon is a slowly rotating rainbow (the rotation is a plain transform = free) */
+.hero__hex-wrap .flip-front, .hero__hex-wrap .flip-back { overflow: hidden; background: #0b0d24; }
+.hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before {
+  content: ""; position: absolute; inset: -45%; z-index: 0;
+  background: conic-gradient(from 0deg, var(--accent), var(--violet), var(--pink), var(--gold), var(--accent));
+  animation: rimSpin 6s linear infinite;
+}
+.hero__hex-wrap .flip-front .hex__inner, .hero__hex-wrap .flip-back .hex__inner { z-index: 1; }
+@keyframes rimSpin { to { transform: rotate(360deg); } }
+
+/* same rotating rim on the About photo */
+.panel--about .hex { position: relative; overflow: hidden; background: #0b0d24; }
+.panel--about .hex::before {
+  content: ""; position: absolute; inset: -45%;
+  background: conic-gradient(from 0deg, var(--accent), var(--violet), var(--pink), var(--gold), var(--accent));
+  animation: rimSpin 9s linear infinite;
+}
+.panel--about .hex .hex__inner { z-index: 1; }
+.lite .panel--about .hex::before { animation: none; }
+
+/* the soft teal glow behind the photo breathes */
+.hero__hex-wrap::before { animation: glowBreath 4.5s ease-in-out infinite; }
+@keyframes glowBreath {
+  0%, 100% { opacity: .75; transform: scale(.94); }
+  50%      { opacity: 1;   transform: scale(1.06); }
+}
+
+/* tilted orbit ring with a little glowing moon (built by motion.js) */
+.orbit {
+  position: absolute; left: 50%; top: 50%; z-index: -1; pointer-events: none;
+  width: 134%; aspect-ratio: 1; margin: -67% 0 0 -67%;
+  border-radius: 50%;
+  border: 1px dashed rgba(170, 180, 255, .32);
+  transform: rotateX(74deg) rotateZ(-16deg);
+}
+.orbit i {
+  position: absolute; inset: 0; border-radius: 50%;
+  animation: orbitSpin 10s linear infinite;
+}
+.orbit i::after {
+  content: ""; position: absolute; top: -7px; left: calc(50% - 7px); width: 14px; height: 14px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fff, var(--gold) 45%, #a8742e);
+  box-shadow: 0 0 14px 3px rgba(255, 210, 122, .65);
+}
+@keyframes orbitSpin { to { transform: rotate(360deg); } }
+
+/* ---- the flip card ---- */
+.flip { display: inline-block; cursor: pointer; }
+.flip-inner { animation: introSpin 1.5s cubic-bezier(.2, .8, .2, 1); }          /* spins in once on load */
+@keyframes introSpin { from { transform: rotateY(-200deg) scale(.55); opacity: 0; } to { transform: rotateY(0) scale(1); opacity: 1; } }
+
+/* back of the card: twinkling stars, a bobbing planet, and a light sweep (only run while flipped) */
+.flip-back .hex__inner { position: absolute; overflow: hidden; }
+.flip-back .hex__inner::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(circle at 25% 20%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 70% 35%, rgba(255, 255, 255, 0.8) 0 1px, transparent 2px),
-    radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.7) 0 1px, transparent 2px),
-    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.9) 0 1px, transparent 2px),
-    radial-gradient(circle at 30% 30%, #3b2a8f 0, #0b0d24 70%);
-  box-shadow: 0 0 30px rgba(45, 226, 212, 0.35);
+    radial-gradient(circle at 18% 22%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 18%, #fff 0 1.2px, transparent 2.4px),
+    radial-gradient(circle at 62% 46%, #cfe 0 1px, transparent 2px),
+    radial-gradient(circle at 30% 70%, #fff 0 1.2px, transparent 2.4px),
+    radial-gradient(circle at 84% 78%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 12% 52%, #ffe 0 1px, transparent 2px),
+    radial-gradient(circle at 50% 90%, #fff 0 1px, transparent 2px);
+  animation: twinkle 2.6s ease-in-out infinite alternate; animation-play-state: paused;
 }
-.flip-back h3 { margin: 0.2rem 0; font-size: 1.2rem; }
-.flip-back p { margin: 0; font-size: 0.85rem; opacity: 0.85; }
-.flip-back .orb {                                        /* small planet with a spinning ring */
-  position: absolute; width: 46%; aspect-ratio: 1; top: -12%; right: -12%; border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #ffd9a0, #b5775a 60%, #5b3a2e);
-  opacity: 0.9; animation: spin 14s linear infinite;
+.flip-back .hex__inner::after {
+  content: ""; position: absolute; inset: -20% -60%; pointer-events: none;
+  background: linear-gradient(110deg, transparent 42%, rgba(255, 255, 255, .20) 50%, transparent 58%);
+  transform: translateX(-100%);
+  animation: sweep 3.8s ease-in-out infinite; animation-play-state: paused;
 }
-.flip-back .orb::after {
-  content: ""; position: absolute; inset: -18% -40%; border: 2px solid rgba(255, 255, 255, 0.5);
-  border-radius: 50%; transform: rotateX(70deg);
+.flip-back .flip-orb { animation: bob 3.2s ease-in-out infinite; animation-play-state: paused; }
+.flip.is-flipped .flip-back .hex__inner::before,
+.flip.is-flipped .flip-back .hex__inner::after,
+.flip.is-flipped .flip-back .flip-orb { animation-play-state: running; }
+@keyframes twinkle { from { opacity: .35; } to { opacity: 1; } }
+@keyframes sweep { 0% { transform: translateX(-100%); } 60%, 100% { transform: translateX(100%); } }
+@keyframes bob { 50% { translate: 0 -6px; } }
+
+/* ============================================================
+   2. TEXT — shimmering name, typing role, words that rise in
+   ============================================================ */
+.hero__name {
+  background: linear-gradient(100deg, #fff 0%, #fff 38%, var(--accent) 48%, #c1b5ff 56%, #fff 66%, #fff 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+  text-shadow: none;
+  animation: shimmer 7s ease-in-out infinite;
 }
+@keyframes shimmer { 0% { background-position: 130% 0; } 55%, 100% { background-position: -130% 0; } }
 
-@keyframes floaty { 50% { transform: translateY(-10px); } }
-@keyframes intro { from { transform: rotateY(-180deg) scale(0.6); } to { transform: rotateY(0) scale(1); } }
-@keyframes spin { to { transform: rotate(360deg); } }
+.hero__role span { display: inline-block; min-height: 1.2em; }
+.hero__role .caret {
+  display: inline-block; width: 2px; height: 1.05em; margin-left: 3px; vertical-align: -.15em;
+  background: var(--accent); animation: caret 1s steps(1) infinite;
+}
+@keyframes caret { 50% { opacity: 0; } }
 
-/* ---------- 2. Icons: float when idle, wiggle on hover ---------- */
-.float-icon { display: inline-block; animation: bob 3.5s ease-in-out infinite; transition: transform 0.3s; }
-.float-icon:hover { transform: scale(1.25) rotate(10deg); }
-@keyframes bob { 50% { translate: 0 -6px; } }           /* "translate" is separate from "transform", so hover still works */
+/* section titles: each word rises & un-tilts when the panel scrolls in (JS adds .split / .w) */
+.split .w {
+  display: inline-block; opacity: 0;
+  transform: perspective(500px) translateY(.7em) rotateX(-55deg); transform-origin: 50% 100%;
+  transition: opacity .6s ease, transform .8s cubic-bezier(.2, .8, .2, 1);
+  transition-delay: calc(var(--i, 0) * 80ms + 120ms);
+}
+.is-visible .split .w, .split.is-visible .w { opacity: 1; transform: none; }
 
-/* ---------- 3. Tilt cards (JS adds the class) ---------- */
+/* ============================================================
+   3. CARDS — light follows your cursor (spotlight + glowing border), 3D tilt from JS
+   ============================================================ */
+.service-card, .lang-card { position: relative; }
+.service-card::before, .lang-card::before,
+.service-card::after,  .lang-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  transition: opacity .3s ease;
+}
+.service-card::before, .lang-card::before {
+  background: radial-gradient(200px circle at var(--sx, 50%) var(--sy, 50%), rgba(47, 230, 221, .17), transparent 70%);
+}
+.service-card::after, .lang-card::after {
+  padding: 1px;
+  background: radial-gradient(130px circle at var(--sx, 50%) var(--sy, 50%), rgba(47, 230, 221, .95), rgba(122, 107, 255, .5) 55%, transparent 80%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.service-card:hover::before, .lang-card:hover::before,
+.service-card:hover::after,  .lang-card:hover::after { opacity: 1; }
+
 .tilt { will-change: transform; transform-style: preserve-3d; }
+.tilt > * { transform: translateZ(14px); }           /* icon + text pop out of the card while it leans */
 
-/* ---------- 4. Shooting stars ---------- */
-.shooting-star {
-  position: fixed; top: 0; left: 0; width: 130px; height: 2px; z-index: -1; pointer-events: none; opacity: 0;
-  background: linear-gradient(90deg, transparent, #fff);
-  animation: shoot 8s linear infinite;
-}
-@keyframes shoot {
-  0% { opacity: 0; transform: translate(0, 0) rotate(30deg); }
-  2% { opacity: 1; }
-  10% { opacity: 0; transform: translate(420px, 240px) rotate(30deg); }
-  100% { opacity: 0; transform: translate(420px, 240px) rotate(30deg); }
-}
+/* icons: float when idle (JS adds .float-icon), wiggle and glow when touched */
+.float-icon { display: inline-block; animation: bob2 3.6s ease-in-out infinite; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1), filter .3s; }
+.float-icon:hover { transform: scale(1.28) rotate(10deg); filter: drop-shadow(0 0 8px rgba(47, 230, 221, .8)); }
+@keyframes bob2 { 50% { translate: 0 -6px; } }
 
-/* ---------- 5. Mouse sparkles ---------- */
-.spark {
-  position: fixed; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; z-index: 9999;
-  background: var(--accent); box-shadow: 0 0 8px var(--accent);
-  animation: sparkOut 0.8s ease-out forwards;
+/* ============================================================
+   4. BUTTONS — magnetic pull, light sweep, glow ring
+   ============================================================ */
+.btn-pill { position: relative; overflow: hidden; }
+.btn-pill::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .38) 50%, transparent 70%);
+  transform: translateX(-130%);
 }
-@keyframes sparkOut { to { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); } }
+.btn-pill:hover::after { transform: translateX(130%); transition: transform .75s ease; }
+.btn-pill:hover { box-shadow: 0 0 0 4px rgba(47, 230, 221, .14), 0 10px 28px -6px rgba(47, 230, 221, .65); }
+.social-row a:hover { box-shadow: 0 0 18px rgba(47, 230, 221, .7); }
 
-/* ---------- 6. Scroll progress bar ---------- */
+.magnetic { transition: translate .2s ease-out, transform .25s ease, box-shadow .25s ease, background .25s ease, color .25s ease; }
+
+/* ============================================================
+   5. POINTER & PAGE EXTRAS
+   ============================================================ */
+.cursor-glow {                                        /* soft light that trails the mouse */
+  position: fixed; left: 0; top: 0; width: 360px; height: 360px; margin: -180px 0 0 -180px; z-index: 1;
+  pointer-events: none; border-radius: 50%; opacity: 0; transition: opacity .5s ease; will-change: transform;
+  background: radial-gradient(circle, rgba(47, 230, 221, .13), rgba(122, 107, 255, .07) 42%, transparent 70%);
+}
+.cursor-glow.on { opacity: 1; }
+
+.fx-canvas { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; }  /* trail + click bursts */
+
 .scroll-progress {
-  position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 10000;
-  background: linear-gradient(90deg, var(--accent), #7a6bff); transform-origin: left; transform: scaleX(0);
+  position: fixed; top: 0; left: 0; height: 3px; width: 100%; z-index: 10000; pointer-events: none;
+  background: linear-gradient(90deg, var(--accent), var(--violet), var(--pink));
+  box-shadow: 0 0 12px rgba(47, 230, 221, .8);
+  transform-origin: left; transform: scaleX(0);
 }
 
-/* ---------- 7. Buttons: glow when you point at them ---------- */
-.btn:hover, button:hover, .button:hover { box-shadow: 0 0 22px rgba(45, 226, 212, 0.55); transform: translateY(-3px); }
+/* ============================================================
+   6. SAFETY NETS
+   ============================================================ */
+/* slow computer detected by galaxy.js -> keep the page smooth, drop only the decorations */
+.lite .cursor-glow, .lite .orbit, .lite .flip-back .hex__inner::after { display: none; }
+.lite .hero__name { animation: none; }
+.lite .hero__hex-wrap::before, .lite .hero__hex-wrap .flip-front::before, .lite .hero__hex-wrap .flip-back::before { animation: none; }
+.lite .float-icon { animation: none; }
 
-/* Visitors who asked their device for less motion: turn off only the decorations */
+/* visitors who asked their device for less motion */
 @media (prefers-reduced-motion: reduce) {
-  .shooting-star, .spark, .float-icon, .flip { animation: none; }
+  .cursor-glow, .orbit, .fx-canvas { display: none; }
+  .hero__name { animation: none; }
+  .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before, .panel--about .hex::before, .hero__hex-wrap::before, .float-icon, .flip-inner { animation: none; }
+  .split .w { opacity: 1; transform: none; transition: none; }
 }

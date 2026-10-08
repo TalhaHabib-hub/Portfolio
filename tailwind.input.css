@@ -1,0 +1,30 @@
+@layer theme, base, legacy, components, utilities;
+@import "tailwindcss";
+@import "./style.css" layer(legacy);
+@import "./motion.css" layer(legacy);
+@import "./galaxy-fix.css" layer(legacy);
+@import "./github-activity.css" layer(legacy);
+@import "./github-activity-chart-fix.css" layer(legacy);
+
+@source "./index.html";
+@source "./script.js";
+@source "./motion.js";
+@source "./github-activity.js";
+
+@keyframes ctaSheen {
+  0%, 8%, 100% {
+    opacity: 0;
+    transform: translateX(-130%);
+  }
+  11% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 1;
+    transform: translateX(130%);
+  }
+  28% {
+    opacity: 0;
+    transform: translateX(130%);
+  }
+}

@@ -24,7 +24,7 @@
     host.style.background = 'radial-gradient(ellipse at 70% 20%,#1b1440 0,#07061a 55%,#02020a 100%)';
     return;
   }
-  var PR = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 2);
+  var PR = Math.min(window.devicePixelRatio || 1, mobile ? 1.5 : 1.75);   // 2x costs 4x the pixels; 1.75 still looks sharp
   renderer.setPixelRatio(PR);
   renderer.setClearColor(0x03030c, 1);
   var cv = renderer.domElement;
@@ -57,7 +57,7 @@
 
   /* ---------- Saturn textures ---------- */
   function saturnTexture() {
-    var W = 1024, H = 512, c = document.createElement('canvas'); c.width = W; c.height = H;
+    var W = 768, H = 384, c = document.createElement('canvas'); c.width = W; c.height = H;   // smaller = page loads faster
     var g = c.getContext('2d'), img = g.createImageData(W, H), d = img.data;
     var pal = [[0, [88, 82, 76]], [0.08, [126, 114, 98]], [0.18, [170, 150, 114]], [0.30, [216, 192, 144]],
       [0.40, [228, 206, 156]], [0.47, [196, 166, 118]], [0.52, [234, 214, 168]], [0.60, [224, 200, 148]],
@@ -214,9 +214,10 @@
     }, m);
     pts.userData.mat = m; return pts;
   }
-  var mats = [];
+  var mats = [], thinnable = []; // thinnable: {obj, n} so the governor can draw fewer points on a slow GPU
   [[mobile ? 1400 : 3200, 500, 2.0, 0.9, 0.02], [mobile ? 500 : 1100, 380, 2.8, 1.0, 0.05], [mobile ? 120 : 260, 260, 4.4, 1.0, 0.09]].forEach(function (L) {
     var s = starLayer(L[0], L[1], L[2], L[3]); mats.push(s.userData.mat); addLayer(s, -40, L[4], 0, 0);
+    thinnable.push({ obj: s, n: L[0] });
   });
 
   // spiral galaxy disc
@@ -242,6 +243,7 @@
     }, m);
     var holder = new T.Group(); holder.add(gal); gal.rotation.x = 0; holder.rotation.set(-1.12, 0.1, 0.5);
     holder.userData.spin = gal; addLayer(holder, -170, 0.10, 38, 22); window.__galaxyDisc = gal;
+    thinnable.push({ obj: gal, n: N });
   })();
 
   // nebulae
@@ -284,20 +286,49 @@
   addEventListener('scroll', function () { tsy = window.scrollY || 0; }, { passive: true });
   addEventListener('pointermove', function (e) { tmx = e.clientX / innerWidth - 0.5; tmy = e.clientY / innerHeight - 0.5; }, { passive: true });
 
+  /* ---------- performance governor ----------
+     Watches real frame times. If the computer can't keep ~37fps it steps down, one stage per 60 frames:
+       1) render at 1x pixel ratio   2) draw fewer galaxy/star points   3) "lite" mode: 30fps + CSS extras off
+     A fast machine never leaves stage 0, so it keeps full quality. */
+  var gov = window.__galaxyGov = { stage: 0, n: 0, slow: 0, born: performance.now(), last: performance.now(), skip: false, tick: false };
+  document.addEventListener('visibilitychange', function () { gov.last = performance.now(); });   // a hidden tab is not a slow tab
+  function thin(f) { thinnable.forEach(function (o) { o.obj.geometry.setDrawRange(0, Math.floor(o.n * f)); }); }
+  function degrade() {
+    gov.stage++;
+    if (gov.stage === 1) {
+      if (PR > 1) { PR = 1; renderer.setPixelRatio(1); mats.forEach(function (m) { m.uniforms.uPR.value = 1; }); resize(); }
+      else thin(0.6);
+    } else if (gov.stage === 2) thin(0.4);
+    else { thin(0.3); gov.skip = true; document.documentElement.classList.add('lite'); }
+  }
+  function govern(raw) {
+    if (gov.stage >= 3 || performance.now() - gov.born < 2500) return;   // finished, or still loading
+    gov.n++; if (raw > 27) gov.slow++;
+    if (gov.n < 60) return;
+    var bad = gov.slow / gov.n > 0.5; gov.n = gov.slow = 0;
+    if (bad) degrade();
+  }
+
+  /* scroll "warp": the galaxy spins faster while you scroll fast, and when you click (motion.js calls __galaxyKick) */
+  var warp = 0, warpT = 0, kick = 0;
+  window.__galaxyKick = function () { kick = 1; };
+
   var clock = new T.Clock(), tmpQ = new T.Quaternion(), tmpV = new T.Vector3(), tmpN = new T.Vector3();
   function frame() {
     requestAnimationFrame(frame);
     if (document.hidden) return;
+    var nowMs = performance.now(); govern(nowMs - gov.last); gov.last = nowMs;
+    if (gov.skip && (gov.tick = !gov.tick)) return;             // lite mode: draw every second frame
     var dt = Math.min(clock.getDelta(), 0.05), t = reduce ? 0 : clock.elapsedTime;
-    fAcc += dt; if (++fN === 90) { if (fAcc / 90 > 0.026 && PR > 1) { PR = Math.max(1, PR - 0.5); renderer.setPixelRatio(PR); mats.forEach(function (m) { m.uniforms.uPR.value = PR; }); resize(); } fAcc = 0; fN = 0; }
     sy += (tsy - sy) * 0.085; mx += (tmx - mx) * 0.04; my += (tmy - my) * 0.04;
+    if (!reduce) { warp += (Math.max(Math.min(1, Math.abs(tsy - sy) / 500), kick) - warp) * 0.08; kick *= 0.95; warpT += dt * warp * 2.5; }
     cam.rotation.set(-my * 0.025 + Math.sin(t * 0.10) * 0.012, -mx * 0.04 + Math.sin(t * 0.07) * 0.02, Math.sin(t * 0.05) * 0.01);
 
     layers.forEach(function (L) {
       var wp = 2 * tanH * Math.abs(L.z) / H;
       L.obj.position.y = L.by + sy * L.f * wp; L.obj.position.x = L.bx - mx * L.f * 6;
     });
-    if (!reduce && window.__galaxyDisc) window.__galaxyDisc.rotation.y += dt * 0.02;
+    if (!reduce && window.__galaxyDisc) window.__galaxyDisc.rotation.y += dt * (0.02 + warp * 0.45);
     mats.forEach(function (m) { m.uniforms.uTime.value = t; });
 
     // Saturn: pinned to a screen anchor, drifts up slower than the page
@@ -308,7 +339,7 @@
     saturn.updateMatrixWorld(true);
     U.center.value.copy(saturn.position);
     ring.getWorldQuaternion(tmpQ); U.ringN.value.copy(tmpN.set(0, 0, 1).applyQuaternion(tmpQ)).normalize();
-    U.uTime.value = t;
+    U.uTime.value = t + warpT;
 
     renderer.render(scene, cam);
 
@@ -332,8 +363,10 @@
 
   function start() {
     var tex = saturnTexture(), rt = ringTexture();
-    U.map.value = tex; U.ringMap.value = rt;
+    U.map.value = tex; U.ringMap.value = rt; gov.born = performance.now();
     resize(); frame(); requestAnimationFrame(function () { cv.style.opacity = 1; });
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  // let the page paint first, THEN build the planet textures (they take a moment on a slower CPU)
+  function startSoon() { requestAnimationFrame(function () { setTimeout(start, 30); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', startSoon); else startSoon();
 })();

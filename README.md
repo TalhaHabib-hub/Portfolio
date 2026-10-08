@@ -1,6 +1,6 @@
 # My Portfolio
 
-A personal portfolio website built with plain HTML, CSS, and JavaScript — no frameworks, no AI-generated code. Live at **[my-college-portfolio-nu.vercel.app](https://my-college-portfolio-nu.vercel.app)**.
+A personal portfolio website built with HTML, Tailwind CSS, custom CSS, and JavaScript — no UI framework. Live at **[my-college-portfolio-nu.vercel.app](https://my-college-portfolio-nu.vercel.app)**.
 
 ## About
 
@@ -15,13 +15,13 @@ This is Talha Habib's personal portfolio, showcasing projects, skills, and live 
 - **Projects** — a grid of linked GitHub repos
 - **Languages, Frameworks & Tools** — icon grid of the stack in use
 - **Contact form** — powered by [Formspree](https://formspree.io)
-- Smooth scroll-reveal animations and a responsive two-column layout
+- Smooth scroll-reveal animations, continuous motion effects, and a responsive two-column layout
 
 ## Tech Stack
 
 | Category | Tools |
 |---|---|
-| Markup / Styling | HTML5, CSS3 |
+| Markup / Styling | HTML5, Tailwind CSS, custom CSS for bespoke visual effects |
 | Scripting | Vanilla JavaScript |
 | Icons | [Boxicons](https://boxicons.com), [Devicon](https://devicon.dev) |
 | Fonts | Google Fonts (Poppins, Inter) |
@@ -33,7 +33,10 @@ This is Talha Habib's personal portfolio, showcasing projects, skills, and live 
 ```
 Portfolio/
 ├── index.html                     # Main page markup
-├── style.css                      # Core styles
+├── tailwind.input.css             # Tailwind entry point and custom keyframes
+├── tailwind.css                   # Generated stylesheet served by the site
+├── style.css                      # Portfolio component and layout styles
+├── motion.css                     # Custom continuous motion and visual effects
 ├── script.js                      # Scroll-reveal, nav toggle, form handling, etc.
 ├── github-activity.js             # Fetches and renders live GitHub stats
 ├── github-activity.css            # Styles for the GitHub activity section
@@ -45,14 +48,19 @@ Portfolio/
 
 ## Running Locally
 
-No build step is required — it's static HTML/CSS/JS.
+The generated Tailwind stylesheet is checked in for static hosting. Rebuild it after changing Tailwind classes or `tailwind.input.css`.
 
 1. Clone the repo
    ```bash
    git clone https://github.com/TalhaHabib-hub/Portfolio.git
    cd Portfolio
    ```
-2. Open `index.html` in your browser, or serve it locally:
+2. Install the build dependency and generate the Tailwind stylesheet:
+   ```bash
+   npm install
+   npm run build
+   ```
+3. Open `index.html` in your browser, or serve it locally:
    ```bash
    npx serve .
    ```
@@ -64,7 +72,7 @@ No build step is required — it's static HTML/CSS/JS.
 
 ## Deployment
 
-Deployed on [Vercel](https://vercel.com) — any static hosting (Netlify, GitHub Pages, etc.) works just as well since there's no backend or build process.
+Deployed on [Vercel](https://vercel.com) — any static hosting (Netlify, GitHub Pages, etc.) works just as well. The custom galaxy, hexagon, chart, and motion effects remain in their dedicated CSS files to preserve their rendering and behavior.
 
 ## License
 
