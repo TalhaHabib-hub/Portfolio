@@ -14,7 +14,7 @@
    1. HERO PHOTO — spinning neon rim, pulsing glow, orbiting moon
    ============================================================ */
 
-/* A white highlight circles each face as the hexagon rotates. */
+/* A white highlight circles each face as the cube rotates. */
 .hero__hex-wrap .carousel-face { overflow: hidden; background: #0b0d24; }
 .hero__hex-wrap .carousel-face::before {
   content: ""; position: absolute; inset: -45%; z-index: 0;
@@ -60,14 +60,17 @@
 }
 @keyframes orbitSpin { to { transform: rotate(360deg); } }
 
-/* ---- the six-face 3D hexagon ---- */
-.flip { display: inline-block; }
-.hex-carousel {
+/* ---- the six-face 3D cube ---- */
+.profile-cube { display: inline-block; }
+.cube-carousel {
   position: absolute; inset: 0;
   transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
-  animation: hexCarouselSpin 30s linear infinite;
+  animation: cubeCarouselSpin 36s linear infinite;
 }
-@keyframes hexCarouselSpin { to { transform: rotateY(360deg); } }
+@keyframes cubeCarouselSpin {
+  from { transform: rotateX(-12deg) rotateY(0deg); }
+  to { transform: rotateX(-12deg) rotateY(360deg); }
+}
 
 /* ============================================================
    2. TEXT — shimmering name, typing role, words that rise in

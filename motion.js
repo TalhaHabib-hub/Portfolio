@@ -9,42 +9,42 @@
   var isLite = function () { return root.classList.contains('lite'); };
 
   // ---------- EDIT THESE ----------
-  var FLIP_TARGET = '.hero__hex-wrap .hex';                      // the hexagon that flips
+  var FLIP_TARGET = '.hero__hex-wrap .hex';                      // the portrait face that becomes the cube
   var TILT_CARDS = '.service-card, .lang-card';                   // cards that lean toward the mouse
   var SPOT_CARDS = '.service-card, .lang-card';                   // cards with a cursor spotlight
   var MAGNETIC = '.btn-pill, .social-row a';                      // things that lean toward the mouse
   var TITLES = '.panel-title, .panel--about h2';                  // headings whose words rise in
   var HEX_FACES = [
     {
-      className: 'hex-face--about',
+      className: 'cube-face--about',
       icon: 'bx-user',
-      eyebrow: 'A LITTLE ABOUT ME',
+      eyebrow: 'EDUCATION',
       title: 'CS Student',
       text: 'Full-stack developer building toward a career in AI.'
     },
     {
-      className: 'hex-face--stack',
+      className: 'cube-face--stack',
       icon: 'bx-code-alt',
-      eyebrow: 'MY TOOLKIT',
+      eyebrow: 'TECH STACK',
       title: 'MERN + Laravel',
       text: 'React, Node.js, Express, MongoDB and Laravel.'
     },
     {
-      className: 'hex-face--experience',
+      className: 'cube-face--experience',
       icon: 'bx-briefcase',
       eyebrow: 'EXPERIENCE',
       title: 'HindukushSoft',
       text: 'Internship experience building CRUD apps and REST APIs.'
     },
     {
-      className: 'hex-face--ai',
+      className: 'cube-face--ai',
       icon: 'bx-bulb',
-      eyebrow: 'WHAT I AM BUILDING',
+      eyebrow: 'AI PROJECTS',
       title: 'AI for learning',
       text: 'Gemini-powered study tools, quizzes and feedback.'
     },
     {
-      className: 'hex-face--home',
+      className: 'cube-face--home',
       icon: 'bx-map',
       eyebrow: 'PROUDLY BASED IN',
       title: 'Chitral, Pakistan',
@@ -54,53 +54,53 @@
   var TYPE_ROLES = ['Full-Stack Developer', 'MERN Developer', 'Laravel Developer', 'Future AI Engineer']; // [] = no typing
   var COLORS = ['#ffffff'];
 
-  // ---------- 1. Rotating six-face introduction ----------
+  // ---------- 1. Rotating six-face cube ----------
   var hex = document.querySelector(FLIP_TARGET);
   if (hex) {
-    var flip = document.createElement('div');
-    flip.className = 'flip';
-    if (hex.classList.contains('hex--drift')) {
-      hex.classList.remove('hex--drift');
-      flip.classList.add('hex--drift');
-    }
+    var cube = document.createElement('div');
+    cube.className = 'profile-cube';
     var carousel = document.createElement('div');
-    carousel.className = 'hex-carousel';
+    carousel.className = 'cube-carousel';
 
-    hex.replaceWith(flip);
-    flip.setAttribute('role', 'group');
-    flip.setAttribute('aria-roledescription', 'rotating hexagon');
-    flip.setAttribute('aria-label', 'Meet Talha Habib: a computer science student and full-stack developer from Chitral, Pakistan.');
-    flip.appendChild(carousel);
+    hex.replaceWith(cube);
+    cube.setAttribute('role', 'group');
+    cube.setAttribute('aria-roledescription', 'rotating cube');
+    cube.setAttribute('aria-label', 'Talha Habib: full-stack developer, computer science student, MERN and Laravel, AI projects, HindukushSoft internship, Chitral Pakistan.');
+    cube.appendChild(carousel);
 
     var welcome = document.createElement('div');
-    welcome.className = 'hex-welcome';
-    welcome.innerHTML = '<p class="hex-welcome__eyebrow">HELLO, I AM</p><h2>Talha Habib</h2><p>Full-Stack Developer</p>';
+    welcome.className = 'cube-label';
     hex.classList.remove('hex--drift');
-    hex.classList.add('carousel-face', 'flip-front');
+    hex.classList.add('carousel-face', 'cube-face--portrait');
+    hex.classList.remove('hex');
     hex.style.setProperty('--face-index', 0);
-    hex.setAttribute('aria-label', 'Welcome, I am Talha Habib, a full-stack developer.');
+    hex.setAttribute('aria-label', 'Talha Habib, Full-Stack Developer.');
     var photoContent = hex.querySelector('.hex__inner');
-    if (photoContent) photoContent.appendChild(welcome);
+    if (photoContent) {
+      photoContent.style.clipPath = 'none';
+      photoContent.style.webkitClipPath = 'none';
+      photoContent.appendChild(welcome);
+    }
+    welcome.innerHTML = '<h2>Talha Habib</h2><p>Full-Stack Developer</p>';
     carousel.appendChild(hex);
 
-    HEX_FACES.forEach(function (faceData, index) {
+    HEX_FACES.forEach(function (faceData) {
       var face = document.createElement('div');
-      face.className = 'hex carousel-face ' + faceData.className;
-      face.style.setProperty('--face-index', index + 1);
+      face.className = 'carousel-face ' + faceData.className;
       face.setAttribute('aria-label', faceData.eyebrow + ': ' + faceData.title + '. ' + faceData.text);
 
       var content = document.createElement('div');
-      content.className = 'hex__inner hex-face__content';
+      content.className = 'cube-face__content';
       var icon = document.createElement('i');
       icon.className = 'bx ' + faceData.icon;
       icon.setAttribute('aria-hidden', 'true');
       var eyebrow = document.createElement('p');
-      eyebrow.className = 'hex-face__eyebrow';
+      eyebrow.className = 'cube-face__eyebrow';
       eyebrow.textContent = faceData.eyebrow;
       var title = document.createElement('h2');
       title.textContent = faceData.title;
       var text = document.createElement('p');
-      text.className = 'hex-face__text';
+      text.className = 'cube-face__text';
       text.textContent = faceData.text;
 
       content.append(icon, eyebrow, title, text);
@@ -109,23 +109,23 @@
     });
 
     // little tilted orbit ring with a moon, behind the photo
-    var wrap = flip.parentElement;
+    var wrap = cube.parentElement;
     if (wrap && !calm) {
       var orbit = document.createElement('div');
       orbit.className = 'orbit';
       orbit.setAttribute('aria-hidden', 'true');
       orbit.innerHTML = '<i></i>';
-      wrap.insertBefore(orbit, flip);
+      wrap.insertBefore(orbit, cube);
     }
   }
 
-  // ---------- 2. Typing role: "And I'm a  Full-Stack Developer|" cycles through TYPE_ROLES ----------
+  // ---------- 2. Cycle through developer roles ----------
   var roleEl = document.querySelector('.hero__role span');
   if (roleEl && !calm && TYPE_ROLES.length > 1) {
     var original = roleEl.textContent.trim();
     var roles = TYPE_ROLES.slice();
     if (roles.indexOf(original) < 0) roles.unshift(original);
-    roleEl.parentElement.setAttribute('aria-label', "And I'm a " + original);
+    roleEl.parentElement.setAttribute('aria-label', original);
     roleEl.textContent = original;
     var caret = document.createElement('span');
     caret.className = 'caret'; caret.setAttribute('aria-hidden', 'true');
