@@ -31,6 +31,8 @@
     }
     var inner = document.createElement('div');
     inner.className = 'flip-inner';
+    var spinner = document.createElement('div');
+    spinner.className = 'flip-spinner';
     var back = document.createElement('div');
     back.className = 'flip-back hex';
     back.innerHTML =
@@ -38,7 +40,8 @@
       BACK_ROLE + '</p><p>' + BACK_PLACE + '</p></div>';
 
     hex.replaceWith(flip);
-    flip.appendChild(inner);
+    flip.appendChild(spinner);
+    spinner.appendChild(inner);
     hex.classList.add('flip-front');
     inner.append(hex, back);
 
@@ -215,7 +218,7 @@
   }, { passive: true });
 
   // ---------- 9. Cursor light + sparkle trail + click bursts ----------
-  if (!calm && canHover) {
+  if (canHover) {
     var glow = document.createElement('div');
     glow.className = 'cursor-glow'; glow.setAttribute('aria-hidden', 'true');
     document.body.appendChild(glow);
@@ -284,8 +287,10 @@
 
     var lastSpark = 0;
     addEventListener('pointermove', function (e) {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
       var now = performance.now();
-      if (!isLite() && now - lastSpark > 45 && parts.length < MAX) {
+      var lite = isLite();
+      if (now - lastSpark > (lite ? 90 : 45) && parts.length < (lite ? 35 : MAX)) {
         lastSpark = now;
         parts.push({ x: e.clientX, y: e.clientY, vx: (Math.random() - .5) * 40, vy: (Math.random() - .2) * 30, g: 60,
           r: 1.4 + Math.random() * 2, life: .7, max: .7, c: pick() });
@@ -294,6 +299,7 @@
     }, { passive: true });
 
     addEventListener('pointerdown', function (e) {          // click = small supernova
+      if (e.pointerType && e.pointerType !== 'mouse') return;
       var n = isLite() ? 10 : 26;
       rings.push({ x: e.clientX, y: e.clientY, life: .6, max: .6, c: '#2fe6dd' });
       for (var i = 0; i < n && parts.length < MAX + 40; i++) {

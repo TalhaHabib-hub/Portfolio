@@ -62,8 +62,12 @@
 
 /* ---- the flip card ---- */
 .flip { display: inline-block; cursor: pointer; }
-.flip-inner { animation: introSpin 1.5s cubic-bezier(.2, .8, .2, 1); }          /* spins in once on load */
-@keyframes introSpin { from { transform: rotateY(-200deg) scale(.55); opacity: 0; } to { transform: rotateY(0) scale(1); opacity: 1; } }
+.flip-spinner {
+  position: absolute; inset: 0;
+  transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+  animation: cardRevolve 12s linear infinite;
+}
+@keyframes cardRevolve { to { transform: rotateY(360deg); } }
 
 /* back of the card: twinkling stars, a bobbing planet, and a light sweep (only run while flipped) */
 .flip-back .hex__inner { position: absolute; overflow: hidden; }
@@ -170,9 +174,9 @@
    5. POINTER & PAGE EXTRAS
    ============================================================ */
 .cursor-glow {                                        /* soft light that trails the mouse */
-  position: fixed; left: 0; top: 0; width: 360px; height: 360px; margin: -180px 0 0 -180px; z-index: 1;
+  position: fixed; left: 0; top: 0; width: 360px; height: 360px; margin: -180px 0 0 -180px; z-index: 9998;
   pointer-events: none; border-radius: 50%; opacity: 0; transition: opacity .5s ease; will-change: transform;
-  background: radial-gradient(circle, rgba(47, 230, 221, .13), rgba(122, 107, 255, .07) 42%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, .18), rgba(255, 255, 255, .08) 42%, transparent 70%);
 }
 .cursor-glow.on { opacity: 1; }
 
@@ -189,15 +193,15 @@
    6. SAFETY NETS
    ============================================================ */
 /* slow computer detected by galaxy.js -> keep the page smooth, drop only the decorations */
-.lite .cursor-glow, .lite .orbit, .lite .flip-back .hex__inner::after { display: none; }
+.lite .orbit, .lite .flip-back .hex__inner::after { display: none; }
 .lite .hero__name { animation: none; }
 .lite .hero__hex-wrap::before { animation: none; }
 .lite .float-icon { animation: none; }
 
 /* visitors who asked their device for less motion */
 @media (prefers-reduced-motion: reduce) {
-  .cursor-glow, .orbit, .fx-canvas { display: none; }
+  .orbit { display: none; }
   .hero__name { animation: none; }
-  .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before, .panel--about .hex::before, .hero__hex-wrap::before, .float-icon, .flip-inner { animation: none; }
+  .hero__hex-wrap .flip-front::before, .hero__hex-wrap .flip-back::before, .panel--about .hex::before, .hero__hex-wrap::before, .float-icon { animation: none; }
   .split .w { opacity: 1; transform: none; transition: none; }
 }
