@@ -39,6 +39,69 @@
   var donutChart = null;
   var radarChart = null;
 
+  var doughnutDepth = {
+    id: "doughnutDepth",
+
+    beforeDatasetsDraw: function (chart) {
+      var meta = chart.getDatasetMeta(0);
+
+      if (!meta || !meta.data.length) {
+        return;
+      }
+
+      var ctx = chart.ctx;
+
+      for (var layer = 10; layer > 0; layer--) {
+        ctx.save();
+        ctx.translate(0, layer * 1.15);
+        ctx.globalAlpha = 0.16;
+
+        meta.data.forEach(function (arc) {
+          arc.draw(ctx);
+        });
+
+        ctx.restore();
+      }
+    }
+  };
+
+  var radarDepth = {
+    id: "radarDepth",
+
+    beforeDatasetsDraw: function (chart) {
+      var meta = chart.getDatasetMeta(0);
+
+      if (!meta || meta.data.length < 3) {
+        return;
+      }
+
+      var ctx = chart.ctx;
+      var points = meta.data;
+
+      for (var layer = 8; layer > 0; layer--) {
+        ctx.save();
+        ctx.beginPath();
+        points.forEach(function (point, index) {
+          var x = point.x;
+          var y = point.y + layer * 1.5;
+
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+        ctx.closePath();
+        ctx.fillStyle = "rgba(20, 132, 145, 0.16)";
+        ctx.strokeStyle = "rgba(45, 220, 210, 0.16)";
+        ctx.lineWidth = 1;
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  };
+
   if (!elRepos) return;
 
   function animateCount(el, target) {
@@ -121,6 +184,8 @@
 
     donutChart = new Chart(canvas, {
       type: "doughnut",
+
+      plugins: [doughnutDepth],
 
       data: {
         labels: langEntries.map(function (x) {
@@ -298,6 +363,8 @@
 
     radarChart = new Chart(canvas, {
       type: "radar",
+
+      plugins: [radarDepth],
 
       data: {
         labels: Object.keys(SKILLS),

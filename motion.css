@@ -81,9 +81,13 @@
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent; color: transparent;
   text-shadow: none;
-  animation: shimmer 7s ease-in-out infinite;
+  animation: shimmer 7s ease-in-out infinite, nameFloat 5s ease-in-out infinite;
 }
 @keyframes shimmer { 0% { background-position: 130% 0; } 55%, 100% { background-position: -130% 0; } }
+@keyframes nameFloat {
+  0%, 100% { transform: perspective(700px) translateY(0) rotateX(0deg); }
+  50%      { transform: perspective(700px) translateY(-4px) rotateX(2deg); }
+}
 
 .hero__role span { display: inline-block; min-height: 1.2em; }
 .hero__role .caret {
@@ -124,11 +128,22 @@
 
 .tilt { will-change: transform; transform-style: preserve-3d; }
 .tilt > * { transform: translateZ(14px); }           /* icon + text pop out of the card while it leans */
+.lang-card {
+  transform-style: preserve-3d;
+  box-shadow: inset 0 1px rgba(255,255,255,.12), 0 7px 0 rgba(16, 22, 49, .75), 0 14px 24px rgba(0,0,0,.2);
+  transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.lang-card > * { transform: translateZ(12px); }
+.lang-card:hover {
+  border-color: rgba(255,255,255,.22);
+  box-shadow: inset 0 1px rgba(255,255,255,.2), 0 10px 0 rgba(16, 22, 49, .75), 0 22px 32px rgba(0,0,0,.28);
+}
 
 /* icons: float when idle (JS adds .float-icon), wiggle and glow when touched */
-.float-icon { display: inline-block; animation: bob2 3.6s ease-in-out infinite; transition: transform .3s cubic-bezier(.3, 1.6, .5, 1), filter .3s; }
-.float-icon:hover { transform: scale(1.28) rotate(10deg); filter: drop-shadow(0 0 8px rgba(47, 230, 221, .8)); }
+.float-icon { display: inline-block; transform-style: preserve-3d; animation: bob2 3.6s ease-in-out infinite, iconCubeTurn 12s linear infinite; transition: filter .3s; }
+.float-icon:hover, a > i:hover, button > i:hover { filter: drop-shadow(0 0 8px rgba(255, 255, 255, .75)); animation-duration: 3.2s, 3s; }
 @keyframes bob2 { 50% { translate: 0 -6px; } }
+@keyframes iconCubeTurn { to { transform: perspective(240px) rotateY(360deg); } }
 
 /* ============================================================
    4. BUTTONS — magnetic pull, light sweep, glow ring
