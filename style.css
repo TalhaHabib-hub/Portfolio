@@ -392,19 +392,54 @@ html[data-theme="light"] .snow-layer { opacity: 1; }
   0% { transform: translate3d(0, -10%, 0) scale(.8); }
   100% { transform: translate3d(var(--drift), 120vh, 0) scale(1.15); }
 }
-.cursor-snow {
+.rain-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+html[data-theme="dark"] .rain-layer { opacity: 1; }
+.raindrop {
+  position: absolute;
+  top: -12%;
+  width: 1px;
+  height: var(--length);
+  background: linear-gradient(180deg, transparent, rgba(177, 218, 218, var(--opacity)));
+  box-shadow: 0 0 4px rgba(142, 194, 197, 0.18);
+  transform: rotate(11deg);
+  transform-origin: top;
+  animation: rainfall var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+@keyframes rainfall {
+  to { transform: translate3d(var(--drift), 120vh, 0) rotate(11deg); }
+}
+.weather-cursor {
   position: fixed;
   left: 0; top: 0;
-  width: 10px; height: 10px;
+  width: 9px; height: 12px;
   z-index: 50;
   pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.95), rgba(224,239,255,0.8));
-  box-shadow: 0 0 10px rgba(255,255,255,0.7);
+  border-radius: 50% 50% 50% 0;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.96), rgba(198,224,237,0.82));
+  box-shadow: 0 0 10px rgba(198,224,237,0.6);
   opacity: 0;
-  transition: opacity 200ms ease;
+  transform-origin: top left;
+  transition: opacity 200ms ease, background 200ms ease, box-shadow 200ms ease;
 }
-html[data-theme="light"] .cursor-snow { opacity: 1; }
+html[data-theme="light"] .weather-cursor { opacity: 1; border-radius: 50%; }
+html[data-theme="dark"] .weather-cursor {
+  opacity: 1;
+  width: 2px;
+  height: 15px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, transparent, rgba(177, 218, 218, 0.85));
+  box-shadow: 0 0 5px rgba(142, 194, 197, 0.4);
+  transform: rotate(11deg);
+}
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 @media (max-width: 760px) {
@@ -479,5 +514,5 @@ html[data-theme="light"] .cursor-snow { opacity: 1; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
-  .hero-water-flow, .footer-water-flow, .snowflake { animation: none !important; }
+  .hero-water-flow, .footer-water-flow, .snowflake, .raindrop { animation: none !important; }
 }

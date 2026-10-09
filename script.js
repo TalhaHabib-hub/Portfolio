@@ -10,6 +10,8 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let activeHeroSlides = [];
 let activeHeroSlide = 0;
 let heroRotation;
+let cursorWeather;
+let rainLayer;
 
 function syncHeroRotation() {
   if (document.hidden || reducedMotion.matches || activeHeroSlides.length < 2) {
@@ -42,7 +44,7 @@ function setTheme(theme, persist) {
   root.dataset.theme = theme;
   selectHeroSlides(theme);
   const isDark = theme === "dark";
-  if (cursorSnow) cursorSnow.style.opacity = isDark ? "0" : "1";
+  if (cursorWeather) cursorWeather.style.opacity = "1";
 
   if (themeIcon) themeIcon.textContent = isDark ? "☀" : "☾";
   if (themeToggle) {
@@ -54,10 +56,9 @@ function setTheme(theme, persist) {
 }
 
 let snowLayer;
-let cursorSnow;
 
 function createSnowEffects() {
-  if (snowLayer || !document.body) return;
+  if (snowLayer || rainLayer || !document.body) return;
 
   snowLayer = document.createElement("div");
   snowLayer.className = "snow-layer";
@@ -78,19 +79,33 @@ function createSnowEffects() {
 
   document.body.appendChild(snowLayer);
 
-  cursorSnow = document.createElement("div");
-  cursorSnow.className = "cursor-snow";
-  document.body.appendChild(cursorSnow);
+  rainLayer = document.createElement("div");
+  rainLayer.className = "rain-layer";
+  rainLayer.setAttribute("aria-hidden", "true");
+  for (let index = 0; index < 52; index += 1) {
+    const drop = document.createElement("span");
+    drop.className = "raindrop";
+    drop.style.left = `${Math.random() * 100}%`;
+    drop.style.setProperty("--length", `${14 + Math.random() * 20}px`);
+    drop.style.setProperty("--duration", `${1 + Math.random() * 1.2}s`);
+    drop.style.setProperty("--delay", `${(Math.random() * 2.2).toFixed(2)}s`);
+    drop.style.setProperty("--drift", `${(-45 + Math.random() * 35).toFixed(0)}px`);
+    drop.style.setProperty("--opacity", `${0.35 + Math.random() * 0.45}`);
+    rainLayer.appendChild(drop);
+  }
+  document.body.appendChild(rainLayer);
+
+  cursorWeather = document.createElement("div");
+  cursorWeather.className = "weather-cursor";
+  document.body.appendChild(cursorWeather);
 
   window.addEventListener("pointermove", (event) => {
-    if (root.dataset.theme === "light") {
-      cursorSnow.style.opacity = "1";
-      cursorSnow.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
-    }
+    const angle = root.dataset.theme === "dark" ? " rotate(11deg)" : "";
+    cursorWeather.style.transform = `translate(${event.clientX}px, ${event.clientY}px)${angle}`;
   });
 
   window.addEventListener("pointerleave", () => {
-    cursorSnow.style.opacity = "0";
+    cursorWeather.style.opacity = "0";
   });
 }
 
