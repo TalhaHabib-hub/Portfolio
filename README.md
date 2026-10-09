@@ -21,7 +21,7 @@ Open `index.html` in a browser, or serve the project directory with any static w
 - Replace `t1.png` with an optimized profile image and update its alternative text in `index.html`.
 - Update the project descriptions and links in `index.html` as your work evolves.
 - The contact form uses a Formspree endpoint. Replace its `action` URL in `index.html` with your own endpoint if you fork this site.
-- Update the CV at `Talha-Habib-CV.pdf` and the profile URLs in `index.html` when needed.
+- Update the printable CV source in `cv.html`, then export it to `Talha-Habib-CV.pdf`; update profile URLs in `index.html` when needed.
 
 ## Deployment
 

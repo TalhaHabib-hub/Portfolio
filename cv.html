@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Talha Habib — Full-stack developer CV">
+  <title>Talha Habib — CV</title>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
+    :root {
+      color-scheme: light;
+      --cream: #eee8db;
+      --paper: #f6f0e5;
+      --green: #244b3d;
+      --green-deep: #172b23;
+      --accent: #93bea0;
+      --ink: #1e2a23;
+      --muted: #536057;
+      --line: #d7d0c2;
+      --sans: "DM Sans", "Segoe UI", sans-serif;
+      --display: "Manrope", "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: #d8d3c8;
+      color: var(--ink);
+      font: 9pt/1.45 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    .sheet {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 12mm auto;
+      padding: 11mm;
+      background: var(--cream);
+      box-shadow: 0 12px 42px rgb(30 42 35 / 18%);
+    }
+    .masthead {
+      display: flex;
+      align-items: center;
+      gap: 6mm;
+      margin-bottom: 7mm;
+      padding-bottom: 5mm;
+      border-bottom: 1px solid var(--line);
+    }
+    .portrait {
+      width: 19mm;
+      height: 19mm;
+      flex: 0 0 auto;
+      overflow: hidden;
+      border: 2px solid var(--paper);
+      border-radius: 50%;
+      background: #dce3d8;
+      box-shadow: 0 0 0 1px var(--line);
+    }
+    .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+    .masthead-copy { flex: 1; }
+    .name {
+      margin: 0;
+      color: var(--green-deep);
+      font: 800 25pt/1.05 var(--display);
+      letter-spacing: -1.2pt;
+    }
+    .role {
+      margin: 1.6mm 0 0;
+      color: var(--green);
+      font: 700 9pt/1.3 var(--display);
+      letter-spacing: 1.25pt;
+      text-transform: uppercase;
+    }
+    .availability {
+      align-self: flex-start;
+      margin-top: 1mm;
+      padding: 1.5mm 3mm;
+      border: 1px solid #b6cabb;
+      border-radius: 20px;
+      color: var(--green);
+      font-size: 7pt;
+      font-weight: 700;
+      letter-spacing: .35pt;
+      white-space: nowrap;
+    }
+    .availability::before {
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin: 0 1.5mm 0 0;
+      border-radius: 50%;
+      background: #6c9b6e;
+      content: "";
+      vertical-align: 1px;
+    }
+    .summary {
+      margin: 0 0 7mm;
+      padding: 4mm 5mm;
+      border-left: 2px solid var(--green);
+      background: rgb(246 240 229 / 75%);
+      color: #35443a;
+      font-size: 9pt;
+      line-height: 1.55;
+    }
+    .columns {
+      display: grid;
+      grid-template-columns: 57mm 1fr;
+      gap: 7mm;
+      align-items: stretch;
+    }
+    .sidebar {
+      padding: 6mm 5mm;
+      background: linear-gradient(155deg, var(--green-deep), var(--green));
+      color: #f2efe6;
+    }
+    .main { min-width: 0; padding: 1mm 0 0; }
+    .section { margin: 0 0 5.7mm; break-inside: avoid; }
+    .section:last-child { margin-bottom: 0; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 2.2mm;
+      margin: 0 0 2.4mm;
+      color: var(--green-deep);
+      font: 800 9pt/1.2 var(--display);
+      letter-spacing: 1pt;
+      text-transform: uppercase;
+    }
+    .section-title::after {
+      height: 1px;
+      flex: 1;
+      background: var(--line);
+      content: "";
+    }
+    .sidebar .section-title { color: #c3ddc9; }
+    .sidebar .section-title::after { background: rgb(233 241 231 / 24%); }
+    .contact-list { display: grid; gap: 2.3mm; }
+    .contact-item { overflow-wrap: anywhere; color: #f2efe6; font-size: 8pt; line-height: 1.4; }
+    .contact-item span {
+      display: block;
+      margin-bottom: .5mm;
+      color: #b8cdbd;
+      font-size: 6.5pt;
+      font-weight: 700;
+      letter-spacing: .8pt;
+      text-transform: uppercase;
+    }
+    .sidebar p { margin: 0; }
+    .degree { font-weight: 700; }
+    .subtle { margin-top: 1mm !important; color: #d0d9d0; font-size: 8pt; }
+    .skill-block { margin: 0 0 2.5mm; }
+    .skill-block:last-child { margin-bottom: 0; }
+    .skill-label { margin-bottom: .7mm !important; color: #c3ddc9; font-size: 7.3pt; font-weight: 700; }
+    .skill-value { color: #f2efe6; font-size: 7.7pt; line-height: 1.5; }
+    .achievement { position: relative; margin: 0 0 2.4mm; padding-left: 3mm; color: #f2efe6; font-size: 7.8pt; line-height: 1.45; }
+    .achievement:last-child { margin-bottom: 0; }
+    .achievement::before { position: absolute; top: 1.4mm; left: 0; color: #a7d0b0; content: "•"; }
+    .entry { margin: 0 0 4mm; break-inside: avoid; }
+    .entry:last-child { margin-bottom: 0; }
+    .entry-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; }
+    .entry h3 {
+      margin: 0;
+      color: var(--ink);
+      font: 700 10pt/1.25 var(--display);
+      letter-spacing: -.2pt;
+    }
+    .date { flex: 0 0 auto; color: var(--muted); font-size: 7.5pt; font-weight: 600; }
+    .entry-meta { margin: .7mm 0 1.2mm; color: var(--green); font-size: 7.7pt; font-weight: 700; }
+    .entry p { margin: 1mm 0 0; color: #3c4940; font-size: 8pt; line-height: 1.45; }
+    ul { margin: 1mm 0 0; padding-left: 4mm; }
+    li { margin: 0 0 .7mm; padding-left: .4mm; color: #3c4940; font-size: 7.8pt; line-height: 1.42; }
+    li:last-child { margin-bottom: 0; }
+    .project-stack { margin: .5mm 0 1mm !important; color: var(--green) !important; font-size: 7pt !important; font-weight: 700; }
+    .project-summary { margin: 0 !important; }
+    .repository-link {
+      display: inline-flex;
+      margin-top: 1mm;
+      padding-bottom: .3mm;
+      border-bottom: 1px solid #9ab49f;
+      color: var(--green);
+      font-size: 7.7pt;
+      font-weight: 700;
+    }
+    .footer-note {
+      margin: 6mm 0 0;
+      padding-top: 2.5mm;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 7pt;
+      letter-spacing: .2pt;
+      text-align: right;
+    }
+    @page { size: A4; margin: 0; }
+    @media print {
+      html, body { width: 210mm; min-height: 297mm; background: var(--cream); }
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .sheet { width: 210mm; min-height: 297mm; margin: 0; box-shadow: none; }
+      a { text-decoration: none; }
+    }
+    @media screen and (max-width: 760px) {
+      .sheet { width: 100%; min-height: 100vh; margin: 0; padding: 7mm; }
+      .columns { grid-template-columns: 1fr; }
+      .sidebar { display: grid; grid-template-columns: 1fr 1fr; gap: 5mm; }
+      .sidebar .section { margin-bottom: 0; }
+      .masthead { align-items: flex-start; }
+      .availability { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="masthead">
+      <div class="portrait"><img src="assets/hero-light.png" alt="Portrait of Talha Habib"></div>
+      <div class="masthead-copy">
+        <h1 class="name">Talha Habib</h1>
+        <p class="role">Full-stack developer</p>
+      </div>
+      <span class="availability">Chitral · Pakistan</span>
+    </header>
+
+    <p class="summary">Full-stack developer working across the MERN stack and Laravel, currently a Computer Science student building toward a career in AI. I turn ideas into working, end-to-end products—from database and API design through to polished frontends—and am currently applying that to an AI-powered student assistant platform for Chitral’s first AI hackathon.</p>
+
+    <div class="columns">
+      <aside class="sidebar">
+        <section class="section">
+          <h2 class="section-title">Contact</h2>
+          <div class="contact-list">
+            <a class="contact-item" href="mailto:talhahabib842653@gmail.com"><span>Email</span>talhahabib842653@gmail.com</a>
+            <a class="contact-item" href="https://wa.me/923480157976"><span>WhatsApp</span>+92 348 0157976</a>
+            <p class="contact-item"><span>Location</span>Chitral, Pakistan</p>
+            <a class="contact-item" href="https://github.com/TalhaHabib-hub"><span>GitHub</span>github.com/TalhaHabib-hub</a>
+            <a class="contact-item" href="https://www.linkedin.com/in/talha-habib-411405410/"><span>LinkedIn</span>linkedin.com/in/talha-habib</a>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Education</h2>
+          <p class="degree">BS Computer Science</p>
+          <p class="subtle">In progress · 2nd semester</p>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Skills</h2>
+          <div class="skill-block"><p class="skill-label">Languages</p><p class="skill-value">HTML5, CSS3, JavaScript, PHP, Python, C++</p></div>
+          <div class="skill-block"><p class="skill-label">Frameworks &amp; libraries</p><p class="skill-value">React, Node.js, Express.js, Laravel, Tailwind CSS</p></div>
+          <div class="skill-block"><p class="skill-label">Tools &amp; platforms</p><p class="skill-value">Git, GitHub, MySQL, XAMPP, Google Gemini API</p></div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Achievements</h2>
+          <p class="achievement">Recommended (REC) for Pakistan Military Academy (PMA) Long Course 155.</p>
+          <p class="achievement">Selected to compete in Chitral’s first AI Hackathon with a self-built AI student-assistant platform.</p>
+        </section>
+      </aside>
+
+      <div class="main">
+        <section class="section">
+          <h2 class="section-title">Experience</h2>
+          <article class="entry">
+            <div class="entry-heading"><h3>Full-Stack Web Application Developer</h3></div>
+            <p class="entry-meta">HindukushSoft Technologies · 2-month internship</p>
+            <ul>
+              <li>Built CRUD applications and REST APIs end-to-end using Laravel and React.</li>
+              <li>Worked across migrations, models, controllers, routes, Blade views, and validation.</li>
+              <li>Implemented authentication flows, including login, registration, and protected routes.</li>
+            </ul>
+          </article>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">Selected projects</h2>
+          <article class="entry">
+            <h3>Student AI Assistant Platform</h3>
+            <p class="project-stack">Laravel · React · MySQL · Google Gemini API</p>
+            <p class="project-summary">AI study tool combining notes, PDF, and image-to-quiz generation; timed tests with AI-explained answers; exam preparation; and a career-guidance chatbot. Built for Chitral’s first AI hackathon.</p>
+          </article>
+          <article class="entry">
+            <h3>HindukushSoft Internship Tasks</h3>
+            <p class="project-stack">Laravel · React</p>
+            <p class="project-summary">CRUD applications and REST API tasks completed during a two-month internship.</p>
+          </article>
+          <article class="entry">
+            <h3>Online Education Website</h3>
+            <p class="project-stack">HTML · CSS · JavaScript</p>
+            <p class="project-summary">A full education-platform site build.</p>
+          </article>
+          <article class="entry">
+            <h3>Amazon UI Clone</h3>
+            <p class="project-stack">HTML · CSS</p>
+            <p class="project-summary">Pixel-matched clone of the Amazon desktop interface.</p>
+          </article>
+          <article class="entry">
+            <h3>50 Projects in HTML, CSS &amp; JS</h3>
+            <p class="project-stack">HTML · CSS · JavaScript</p>
+            <p class="project-summary">A growing set of small front-end builds and experiments.</p>
+          </article>
+          <article class="entry">
+            <h3>Web Projects</h3>
+            <p class="project-stack">HTML · CSS · JavaScript</p>
+            <p class="project-summary">A collection of standalone web builds.</p>
+          </article>
+          <a class="repository-link" href="https://github.com/TalhaHabib-hub?tab=repositories">Explore all repositories on GitHub ↗</a>
+        </section>
+      </div>
+    </div>
+    <p class="footer-note">TALHA HABIB · CHITRAL, PAKISTAN</p>
+  </main>
+</body>
+</html>
