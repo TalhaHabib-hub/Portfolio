@@ -10,6 +10,7 @@
   <meta property="og:type" content="website">
   <title>Talha Habib — Full-stack developer</title>
   <link rel="icon" type="image/png" href="favicon-64.png">
+  <link rel="preload" as="image" href="assets/mountain-landscape.jpg">
   <link rel="preload" as="image" href="t1.png">
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
@@ -33,6 +34,11 @@
 
   <main id="main">
     <section class="hero shell" id="home" aria-labelledby="hero-title">
+      <div class="hero-landscapes" aria-hidden="true">
+        <img class="hero-landscape is-active" src="assets/mountain-landscape.jpg" alt="" fetchpriority="high">
+        <img class="hero-landscape" src="assets/mountain-lake.jpg" alt="" loading="eager">
+        <img class="hero-landscape" src="assets/mountain-valley.jpg" alt="" loading="eager">
+      </div>
       <div class="hero-copy">
         <p class="eyebrow"><span class="availability-dot"></span> COMPUTER SCIENCE STUDENT · CHITRAL, PAKISTAN</p>
         <h1 id="hero-title">I build useful things <span class="headline-accent">for the web.</span></h1>
@@ -68,6 +74,7 @@
       <div class="project-grid">
         <a class="project-card project-featured" href="https://github.com/TalhaHabib-hub/Student_AI_Platform" target="_blank" rel="noopener noreferrer">
           <div class="project-visual visual-ai" aria-hidden="true">
+            <img class="project-photo" src="assets/ai-study.jpg" alt="" loading="lazy" decoding="async">
             <span class="visual-label">LEARN BETTER</span>
             <div class="ai-window"><span class="window-dots">•••</span><span class="ai-chip">✳ AI study assistant</span><span class="ai-line"></span><span class="ai-line ai-line-short"></span><span class="ai-question">Your practice quiz is ready <b>↗</b></span></div>
           </div>
@@ -79,6 +86,7 @@
         </a>
         <a class="project-card" href="https://github.com/TalhaHabib-hub/OnlineEducationWebsite" target="_blank" rel="noopener noreferrer">
           <div class="project-visual visual-learning" aria-hidden="true">
+            <img class="project-photo" src="assets/online-learning.jpg" alt="" loading="lazy" decoding="async">
             <span class="course-card"><span class="course-mark">01</span><span>COURSE OVERVIEW</span><b>Learn at<br>your pace.</b><i>Explore courses&nbsp; →</i></span>
             <span class="visual-side-note">A BETTER WAY TO LEARN</span>
           </div>
@@ -90,6 +98,7 @@
         </a>
         <a class="project-card project-internship" href="https://github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft" target="_blank" rel="noopener noreferrer">
           <div class="project-visual visual-internship" aria-hidden="true">
+            <img class="project-photo" src="assets/internship-team.jpg" alt="" loading="lazy" decoding="async">
             <span class="internship-mark">HS<span>.</span></span><span class="internship-caption">BUILD · LEARN · SHIP</span>
             <span class="internship-lines"><i></i><i></i><i></i></span>
           </div>

@@ -39,6 +39,30 @@ themeToggle?.addEventListener("click", () => {
   }
 });
 
+const heroSlides = [...document.querySelectorAll(".hero-landscape")];
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let activeHeroSlide = Math.max(0, heroSlides.findIndex((slide) => slide.classList.contains("is-active")));
+let heroRotation;
+
+function syncHeroRotation() {
+  if (document.hidden || reducedMotion.matches || heroSlides.length < 2) {
+    window.clearInterval(heroRotation);
+    heroRotation = undefined;
+    return;
+  }
+  if (heroRotation !== undefined) return;
+
+  heroRotation = window.setInterval(() => {
+    heroSlides[activeHeroSlide].classList.remove("is-active");
+    activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
+    heroSlides[activeHeroSlide].classList.add("is-active");
+  }, 7000);
+}
+
+document.addEventListener("visibilitychange", syncHeroRotation);
+reducedMotion.addEventListener("change", syncHeroRotation);
+syncHeroRotation();
+
 const year = document.getElementById("year");
 if (year) year.textContent = new Date().getFullYear();
 
