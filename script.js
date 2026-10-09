@@ -1,460 +1,75 @@
+"use strict";
 
-(function () {
-  "use strict";
+const root = document.documentElement;
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = themeToggle?.querySelector(".theme-icon");
+const themeColor = document.querySelector('meta[name="theme-color"]');
 
-  /* ---------- Footer year ---------- */
-  var yearEl = document.getElementById('year');
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+function setTheme(theme, persist) {
+  root.dataset.theme = theme;
+  const isDark = theme === "dark";
 
-  var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------- Ambient starfield ---------- */
-  var bgFx = document.getElementById('bg-fx');
-  if (bgFx && !prefersReducedMotion) {
-    var STAR_COUNT = window.innerWidth < 640 ? 55 : 110;
-    var frag = document.createDocumentFragment();
-
-    for (var i = 0; i < STAR_COUNT; i++) {
-      var star = document.createElement('span');
-      star.className = 'fx-star';
-      var size = (Math.random() * 2 + 1).toFixed(2);
-      star.style.width = size + 'px';
-      star.style.height = size + 'px';
-      star.style.top = (Math.random() * 100).toFixed(2) + '%';
-      star.style.left = (Math.random() * 100).toFixed(2) + '%';
-      star.style.setProperty('--min-o', (Math.random() * 0.25 + 0.1).toFixed(2));
-      star.style.setProperty('--max-o', (Math.random() * 0.5 + 0.6).toFixed(2));
-      star.style.animationDuration = (Math.random() * 3 + 2).toFixed(2) + 's';
-      star.style.animationDelay = (Math.random() * 4).toFixed(2) + 's';
-      frag.appendChild(star);
-    }
-    bgFx.appendChild(frag);
-
-    function spawnShootingStar() {
-      var s = document.createElement('span');
-      s.className = 'fx-shooting-star';
-      var angle = -15 - Math.random() * 20;
-      var duration = (1.1 + Math.random() * 0.8).toFixed(2);
-
-      s.style.top = (Math.random() * 50).toFixed(2) + '%';
-      s.style.left = (Math.random() * 60).toFixed(2) + '%';
-      s.style.setProperty('--angle', angle + 'deg');
-      s.style.setProperty('--dx', (260 + Math.random() * 220).toFixed(0) + 'px');
-      s.style.setProperty('--dy', (120 + Math.random() * 140).toFixed(0) + 'px');
-      s.style.animationDuration = duration + 's';
-
-      bgFx.appendChild(s);
-      window.setTimeout(function () { s.remove(); }, duration * 1000 + 200);
-    }
-
-    (function scheduleShootingStar() {
-      var delay = 3500 + Math.random() * 5000;
-      window.setTimeout(function () {
-        spawnShootingStar();
-        scheduleShootingStar();
-      }, delay);
-    })();
+  if (themeIcon) themeIcon.textContent = isDark ? "☀" : "☾";
+  if (themeToggle) {
+    themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
+    themeToggle.title = `Switch to ${isDark ? "light" : "dark"} theme`;
   }
+  if (themeColor) themeColor.content = isDark ? "#111512" : "#f7f8f6";
+  if (persist) window.localStorage.setItem("portfolio-theme", theme);
+}
 
-  /* ---------- Hero intro (staggered fade-in) ---------- */
-  document.querySelectorAll('[data-intro-item]').forEach(function (el, i) {
-    window.setTimeout(function () { el.classList.add('is-visible'); }, 120 * i + 80);
-  });
+let savedTheme;
+try {
+  savedTheme = window.localStorage.getItem("portfolio-theme");
+} catch (error) {
+  console.warn("Could not read the saved theme preference.", error);
+}
+const initialTheme = savedTheme === "light" || savedTheme === "dark"
+  ? savedTheme
+  : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+setTheme(initialTheme, false);
 
-  /* ---------- Scroll reveal ---------- */
-  var revealItems = document.querySelectorAll('[data-reveal]');
-  if ('IntersectionObserver' in window && revealItems.length) {
-    var revealObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-
-    revealItems.forEach(function (el) { revealObserver.observe(el); });
-  } else {
-    revealItems.forEach(function (el) { el.classList.add('is-visible'); });
+themeToggle?.addEventListener("click", () => {
+  const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+  try {
+    setTheme(nextTheme, true);
+  } catch (error) {
+    setTheme(nextTheme, false);
+    console.warn("Could not save the theme preference.", error);
   }
+});
 
-  /* ---------- Mobile nav toggle ---------- */
-  var navToggle = document.getElementById('navToggle');
-  var navLinks = document.getElementById('navLinks');
+const year = document.getElementById("year");
+if (year) year.textContent = new Date().getFullYear();
 
-  if (navToggle && navLinks) {
-    navToggle.addEventListener('click', function () {
-      var isOpen = navLinks.classList.toggle('is-open');
-      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      navToggle.innerHTML = isOpen ? "<i class='bx bx-x'></i>" : "<i class='bx bx-menu'></i>";
+const contactForm = document.getElementById("contactForm");
+const statusMessage = document.getElementById("cf-status");
+const submitButton = document.getElementById("cf-submit");
+
+contactForm?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!statusMessage || !submitButton) return;
+
+  statusMessage.textContent = "Sending your message…";
+  statusMessage.dataset.state = "";
+  submitButton.disabled = true;
+
+  try {
+    const response = await fetch(contactForm.action, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: new FormData(contactForm)
     });
 
-    navLinks.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
-        navLinks.classList.remove('is-open');
-        navToggle.setAttribute('aria-expanded', 'false');
-        navToggle.innerHTML = "<i class='bx bx-menu'></i>";
-      });
-    });
+    if (!response.ok) throw new Error(`Form submission failed (${response.status}).`);
+    statusMessage.textContent = "Thanks — your message has been sent.";
+    statusMessage.dataset.state = "success";
+    contactForm.reset();
+  } catch (error) {
+    console.error("Contact form submission failed.", error);
+    statusMessage.textContent = "Your message could not be sent. Please try again or contact me on WhatsApp.";
+    statusMessage.dataset.state = "error";
+  } finally {
+    submitButton.disabled = false;
   }
-
-  /* ---------- Project card cursor spotlight ---------- */
-  if (!prefersReducedMotion) {
-    document.querySelectorAll('.project-tile').forEach(function (tile) {
-      tile.addEventListener('pointermove', function (e) {
-        var rect = tile.getBoundingClientRect();
-        var x = ((e.clientX - rect.left) / rect.width) * 100;
-        var y = ((e.clientY - rect.top) / rect.height) * 100;
-        tile.style.setProperty('--mx', x + '%');
-        tile.style.setProperty('--my', y + '%');
-      });
-    });
-  }
-
-  /* ---------- Active nav link on scroll ---------- */
-  var navAnchors = document.querySelectorAll('.nav__links a');
-  var sections = [];
-  navAnchors.forEach(function (a) {
-    var id = a.getAttribute('href').replace('#', '');
-    var section = document.getElementById(id);
-    if (section) sections.push({ link: a, section: section });
-  });
-
-  if ('IntersectionObserver' in window && sections.length) {
-    var navObserver = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        var match = sections.find(function (s) { return s.section === entry.target; });
-        if (!match || !entry.isIntersecting) return;
-        navAnchors.forEach(function (a) { a.classList.remove('is-active'); });
-        match.link.classList.add('is-active');
-      });
-    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
-
-    sections.forEach(function (s) { navObserver.observe(s.section); });
-  }
-
-  /* ---------- Contact form ---------- */
-  var form = document.getElementById('contactForm');
-  var status = document.getElementById('cf-status');
-  var submitBtn = document.getElementById('cf-submit');
-
-  if (form && status) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var action = form.getAttribute('action') || '';
-
-      if (!action || action.indexOf('YOUR_FORM_ID') !== -1) {
-        status.textContent = 'Add your Formspree form ID in the form action to enable sending.';
-        status.className = 'cf-status cf-status--err';
-        return;
-      }
-
-      status.textContent = 'Sending...';
-      status.className = 'cf-status';
-      if (submitBtn) submitBtn.disabled = true;
-
-      fetch(action, {
-        method: 'POST',
-        headers: { Accept: 'application/json' },
-        body: new FormData(form)
-      })
-        .then(function (response) {
-          if (response.ok) {
-            status.textContent = 'Thanks — your message is on its way.';
-            status.className = 'cf-status cf-status--ok';
-            form.reset();
-          } else {
-            status.textContent = 'Something went wrong — please try again.';
-            status.className = 'cf-status cf-status--err';
-          }
-        })
-        .catch(function () {
-          status.textContent = 'Network error — please try again.';
-          status.className = 'cf-status cf-status--err';
-        })
-        .finally(function () {
-          if (submitBtn) submitBtn.disabled = false;
-        });
-    });
-  }
-
-  /* ---------- Portfolio chat helper ---------- */
-  var chatPanel = document.getElementById('portfolioChatPanel');
-  var chatToggle = document.getElementById('portfolioChatToggle');
-  var chatClose = document.getElementById('portfolioChatClose');
-  var chatForm = document.getElementById('portfolioChatForm');
-  var chatInput = document.getElementById('portfolioChatInput');
-  var chatMessages = document.getElementById('portfolioChatMessages');
-
-  if (chatPanel && chatToggle && chatClose && chatForm && chatInput && chatMessages) {
-    function setChatOpen(isOpen) {
-      chatPanel.hidden = !isOpen;
-      chatToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      chatToggle.setAttribute('aria-label', isOpen ? 'Close portfolio assistant' : 'Open portfolio assistant');
-      chatToggle.innerHTML = isOpen
-        ? "<i class='bx bx-x' aria-hidden='true'></i><span>Close</span>"
-        : "<i class='bx bx-message-rounded-dots' aria-hidden='true'></i><span>Ask me</span>";
-      if (isOpen) chatInput.focus();
-    }
-
-    function addChatMessage(message, isUser) {
-      var bubble = document.createElement('div');
-      bubble.className = 'portfolio-chat__message portfolio-chat__message--' + (isUser ? 'user' : 'assistant');
-      var linkPattern = /https:\/\/[^\s<>"']+/g;
-      var lastIndex = 0;
-      var match;
-
-      if (isUser) {
-        bubble.textContent = message;
-      } else {
-        while ((match = linkPattern.exec(message))) {
-          var urlText = match[0];
-          var trailingPunctuation = '';
-          while (/[.,!?;:)]$/.test(urlText)) {
-            trailingPunctuation = urlText.slice(-1) + trailingPunctuation;
-            urlText = urlText.slice(0, -1);
-          }
-          bubble.appendChild(document.createTextNode(message.slice(lastIndex, match.index)));
-          try {
-            var url = new URL(urlText);
-            if (url.protocol !== 'https:') throw new Error('Unsupported link protocol');
-            var link = document.createElement('a');
-            link.href = url.href;
-            link.target = '_blank';
-            link.rel = 'noopener noreferrer';
-            link.textContent = urlText;
-            bubble.appendChild(link);
-          } catch (error) {
-            bubble.appendChild(document.createTextNode(urlText));
-          }
-          bubble.appendChild(document.createTextNode(trailingPunctuation));
-          lastIndex = match.index + match[0].length;
-        }
-        bubble.appendChild(document.createTextNode(message.slice(lastIndex)));
-      }
-      chatMessages.appendChild(bubble);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function getPortfolioReply(message) {
-      var rawText = message.toLowerCase();
-      var text = message.toLowerCase().replace(/[^\w\s]/g, ' ').replace(/\s+/g, ' ').trim();
-
-      if (/^(hi|hello|hey|good morning|good afternoon|good evening)\b/.test(text)) {
-        return "Hi there! I can tell you about Talha's background, skills, projects, or how to contact him.";
-      }
-
-      if (/\b(phone|mobile|cell|number|whatsapp number)\b/.test(text)) {
-        return 'Talha’s phone and WhatsApp number is +92 348 015 7976. Message him on WhatsApp: https://wa.me/923480157976';
-      }
-
-      var asksForLinks = /\b(link|links|url|urls|profile|profiles|account|accounts|social)\b/.test(text);
-      if (asksForLinks && /\b(github|git hub|repositories|repos)\b/.test(text)) {
-        return 'GitHub profile: https://github.com/TalhaHabib-hub';
-      }
-      if (asksForLinks && /\b(linkedin|linked in)\b/.test(text)) {
-        return 'LinkedIn profile: https://www.linkedin.com/in/talha-habib-411405410/';
-      }
-      if (asksForLinks && /\b(facebook|fb)\b/.test(text)) {
-        return 'Facebook profile: https://www.facebook.com/talha.habib.844453';
-      }
-      if (asksForLinks && /\b(whatsapp|wa)\b/.test(text)) {
-        return 'WhatsApp chat: https://wa.me/923480157976';
-      }
-      if (asksForLinks && /\b(cv|resume|curriculum vitae)\b/.test(text)) {
-        return 'Download Talha’s CV: https://my-college-portfolio-nu.vercel.app/Talha-Habib-CV.pdf';
-      }
-      if (asksForLinks && /\b(portfolio|website|site)\b/.test(text)) {
-        return 'Portfolio website: https://my-college-portfolio-nu.vercel.app';
-      }
-      if (asksForLinks && /c\+\+|cplusplus|c plus plus/.test(rawText)) {
-        return 'C++ Learning repository: https://github.com/TalhaHabib-hub/C-plus-plus';
-      }
-      if (asksForLinks && /\b(python)\b/.test(text)) {
-        return 'Python Learning repository: https://github.com/TalhaHabib-hub/Python-Learning';
-      }
-      if (asksForLinks && /\b(student ai|assistant platform)\b/.test(text)) {
-        return 'Student AI Assistant Platform repository: https://github.com/TalhaHabib-hub/student_ai_platform';
-      }
-      if (asksForLinks && /\b(online education|education website|lms)\b/.test(text)) {
-        return 'Online Education Website repository: https://github.com/TalhaHabib-hub/OnlineEducationWebsite';
-      }
-      if (asksForLinks && /\b(hindukush|internship|capstone|cca)\b/.test(text)) {
-        return 'HindukushSoft internship repository: https://github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
-      }
-      if (asksForLinks && /\b(learning fullstack mern|mern practice|redux)\b/.test(text)) {
-        return 'Learning FullStack MERN repository: https://github.com/TalhaHabib-hub/Learning-FullStack-MERN';
-      }
-      if (asksForLinks) {
-        return 'Here are Talha’s profile links:\nGitHub: https://github.com/TalhaHabib-hub\nLinkedIn: https://www.linkedin.com/in/talha-habib-411405410/\nFacebook: https://www.facebook.com/talha.habib.844453\nWhatsApp: https://wa.me/923480157976';
-      }
-
-      if (/\b(student ai|assistant platform)\b/.test(text)) {
-        return 'The Student AI Assistant Platform is a Laravel + React study tool. It can generate quizzes from notes, extract paper tests, and provide graded feedback using Gemini. Repository: https://github.com/TalhaHabib-hub/student_ai_platform';
-      }
-      if (/\b(online education|education website|lms)\b/.test(text)) {
-        return 'The Online Education Website is a role-based Laravel + React learning management system with courses, quizzes, payments, reviews, and an admin dashboard. Repository: https://github.com/TalhaHabib-hub/OnlineEducationWebsite';
-      }
-      if (/\b(hindukush|intern\w*|capstone|cca)\b/.test(text)) {
-        return 'Talha previously interned at HindukushSoft Technologies. His portfolio describes daily tasks and a capstone project, CCA, a full-stack Laravel + React learning platform. Repository: https://github.com/TalhaHabib-hub/WebDevelopment-at-HindukushSoft';
-      }
-      if (/\b(learning fullstack mern|mern practice|redux)\b/.test(text)) {
-        return 'The Learning FullStack MERN repository contains front-end and MERN practice projects, including HTML/CSS/JavaScript builds, React, and Redux exercises. Repository: https://github.com/TalhaHabib-hub/Learning-FullStack-MERN';
-      }
-      if (/\b(python learning|object oriented|file i o|oop)\b/.test(text)) {
-        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: https://github.com/TalhaHabib-hub/Python-Learning';
-      }
-      if (/\b(c\+\+ learning|cplusplus learning|college coursework)\b/.test(rawText) ||
-          (/c\+\+|cplusplus|c plus plus/.test(rawText) && /\b(project|repository|coursework|exercises)\b/.test(text))) {
-        return 'His C++ Learning repository contains college coursework and exercises. Repository: https://github.com/TalhaHabib-hub/C-plus-plus';
-      }
-      if (/\b(python|python learning)\b/.test(text) && /\b(project|repository|coursework|exercises)\b/.test(text)) {
-        return 'The Python Learning repository is a topic-by-topic walkthrough covering Python syntax, data structures, file I/O, and object-oriented programming. Repository: https://github.com/TalhaHabib-hub/Python-Learning';
-      }
-
-      var technologies = [
-        {
-          pattern: /c\+\+|cplusplus|c plus plus/,
-          name: 'C++',
-          evidence: 'His portfolio lists C++ among his languages and links a C++ Learning repository containing college coursework and exercises.'
-        },
-        {
-          pattern: /\bpython\b/,
-          name: 'Python',
-          evidence: 'His portfolio lists Python among his languages and links a Python Learning repository covering syntax, data structures, file I/O, and object-oriented programming.'
-        },
-        {
-          pattern: /\b(javascript|js)\b/,
-          name: 'JavaScript',
-          evidence: 'JavaScript is listed among his languages, and his projects include front-end practice, React, Redux, Node.js, and Express.'
-        },
-        {
-          pattern: /\b(typescript|ts)\b/,
-          name: 'TypeScript',
-          evidence: 'TypeScript appears in the live language breakdown of his public GitHub repositories.'
-        },
-        {
-          pattern: /\b(php|laravel)\b/,
-          name: 'PHP and Laravel',
-          evidence: 'His portfolio highlights Laravel and PHP, with Laravel + React projects including a learning platform and internship capstone.'
-        },
-        {
-          pattern: /\b(react|mern|node|express|mongodb|redux)\b/,
-          name: 'the MERN stack',
-          evidence: 'His portfolio highlights MERN development and React, Node.js, Express, and MongoDB, including practice projects and full-stack applications.'
-        },
-        {
-          pattern: /\b(html|html5|css|css3|tailwind)\b/,
-          name: 'frontend development',
-          evidence: 'His portfolio lists HTML, CSS, and Tailwind CSS and describes building responsive React/MERN interfaces.'
-        },
-        {
-          pattern: /\b(mysql|sql|database)\b/,
-          name: 'databases',
-          evidence: 'MySQL is listed among his tools, and his backend work includes databases and REST APIs.'
-        },
-        {
-          pattern: /\b(gemini|artificial intelligence|ai)\b/,
-          name: 'AI integration',
-          evidence: 'He is building toward a career in AI and has used Gemini for study tools such as quiz generation, paper-test extraction, and graded feedback.'
-        }
-      ];
-      var technology = technologies.find(function (item) { return item.pattern.test(rawText); });
-      if (technology) {
-        return technology.evidence + ' The portfolio shows related coursework or projects, but doesn’t claim a formal proficiency level.';
-      }
-
-      if (/\b(all about|all (the )?(information|details)|everything about|tell me about|about me|who is|about talha|about yourself|background|bio|biography)\b/.test(text)) {
-        return 'Talha Habib is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works across MERN and Laravel, previously interned at HindukushSoft Technologies building CRUD apps and REST APIs, and is working toward a career in AI. His portfolio features an AI study assistant, a learning management system, internship work, and repositories for learning MERN, Python, and C++. He describes himself as consistent, a fast learner, detail-oriented, self-taught, growth-minded, and a hands-on builder.';
-      }
-      if (/\b(name|who are you|what do you know|everything|tell me everything)\b/.test(text)) {
-        return 'His name is Talha Habib. He is a Computer Science student and full-stack developer based in Chitral, Pakistan. He works with MERN and Laravel, has internship experience at HindukushSoft Technologies, and is building toward a career in AI.';
-      }
-      if (/\b(skills?|technolog(y|ies)|tech stack|programming languages?|frameworks?|tools)\b/.test(text)) {
-        return 'Talha’s portfolio lists HTML, CSS, JavaScript, PHP, Python, and C++; React, Node.js, Express, Laravel, and Tailwind CSS; and VS Code, Git, GitHub, MySQL, XAMPP, and the Gemini API. MongoDB is also named as part of his MERN stack.';
-      }
-      if (/\b(projects?|work|portfolio|built|repositories|repos)\b/.test(text)) {
-        return 'Featured projects: Student AI Assistant Platform (Laravel + React study tools using Gemini); Online Education Website (a role-based LMS with courses, quizzes, payments, reviews, and admin dashboard); HindukushSoft internship work (including the CCA capstone); Learning FullStack MERN (HTML/CSS/JS, React, Redux practice); Python Learning; and C++ Learning coursework. Visit https://github.com/TalhaHabib-hub for repositories.';
-      }
-      if (/\b(frontend|front end|website interface|ui)\b/.test(text)) {
-        return 'Talha’s portfolio describes his frontend work as building fast, responsive React and MERN interfaces. His tools include HTML, CSS, JavaScript, React, and Tailwind CSS.';
-      }
-      if (/\b(backend|back end|api|server|database)\b/.test(text)) {
-        return 'Talha’s portfolio highlights Laravel and Node.js backend work, including authentication, databases, CRUD applications, and clean REST APIs.';
-      }
-      if (/\b(service|offer|provide|hire|freelance)\b/.test(text)) {
-        return 'The services listed on Talha’s portfolio are frontend development (responsive React/MERN interfaces), backend development (Laravel and Node APIs, auth, databases, REST endpoints), and AI integration (Gemini-powered quizzes, chat, and content tools).';
-      }
-      if (/\b(trait|strength|quality|personality|fast learner|detail oriented|self taught|consistent|growth minded)\b/.test(text)) {
-        return 'Talha’s portfolio describes him as consistent, a fast learner, detail-oriented, self-taught, growth-minded, and a hands-on builder.';
-      }
-      if (/\b(good at|proficien|expert|experience with|know|use|learn)\b/.test(text)) {
-        return 'I can share what Talha’s portfolio documents, but it doesn’t give formal skill ratings. It lists his technologies and links to coursework, practice projects, and applications. Ask about a specific technology or project for details.';
-      }
-      if (/\b(contact|email|reach|message|whatsapp|linkedin|facebook)\b/.test(text)) {
-        return 'You can use the Contact form on this page, message Talha on WhatsApp at wa.me/923480157976, connect on LinkedIn at linkedin.com/in/talha-habib-411405410/, or find him on GitHub as TalhaHabib-hub and Facebook as talha.habib.844453.';
-      }
-      if (/\b(cv|resume|curriculum vitae)\b/.test(text)) {
-        return 'You can download Talha’s CV using the “Download CV” button near the top of the page or in the footer.';
-      }
-      if (/\b(location|where|based|chitral|pakistan)\b/.test(text)) {
-        return 'Talha is based in Chitral, Pakistan.';
-      }
-      if (/\b(student|education|study|college|university|degree)\b/.test(text)) {
-        return 'The portfolio identifies Talha as a Computer Science student. It doesn’t specify his institution or degree details.';
-      }
-      if (/\b(career|future|goal|aspiration)\b/.test(text)) {
-        return 'Talha’s portfolio says he is building toward a career in AI, while working as a full-stack developer across MERN and Laravel.';
-      }
-      if (/\b(github|followers|stars|repositories|activity|stats)\b/.test(text)) {
-        var repoCount = document.getElementById('ghRepos');
-        var starCount = document.getElementById('ghStars');
-        var followerCount = document.getElementById('ghFollow');
-        var repos = repoCount ? repoCount.textContent.trim() : '';
-        var stars = starCount ? starCount.textContent.trim() : '';
-        var followers = followerCount ? followerCount.textContent.trim() : '';
-        if (repos && repos !== '—' && stars && stars !== '—' && followers && followers !== '—') {
-          return 'Talha’s live GitHub stats currently show ' + repos + ' repositories, ' + stars + ' stars, and ' + followers + ' followers. See the GitHub Activity section or visit https://github.com/TalhaHabib-hub.';
-        }
-        return 'Talha’s portfolio loads repository, stars, language, and follower information live from https://github.com/TalhaHabib-hub. Visit the GitHub Activity section to see the latest stats.';
-      }
-      if (/\b(help|what can you|what do you|can you)\b/.test(text)) {
-        return 'Ask me about Talha’s background, education, internship, skills, services, a specific technology or project, GitHub activity, location, CV, or contact links.';
-      }
-
-      return 'I can answer questions about the information published on Talha’s portfolio: his background, education, internship, skills, projects, services, GitHub activity, location, CV, and contact links. Try asking about one of those, or name a technology or project.';
-    }
-
-    function submitChatMessage(message) {
-      var question = message.trim();
-      if (!question) return;
-      addChatMessage(question, true);
-      addChatMessage(getPortfolioReply(question), false);
-      chatInput.value = '';
-      chatInput.focus();
-    }
-
-    chatToggle.addEventListener('click', function () {
-      setChatOpen(chatPanel.hidden);
-    });
-    chatClose.addEventListener('click', function () {
-      setChatOpen(false);
-      chatToggle.focus();
-    });
-    chatForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      submitChatMessage(chatInput.value);
-    });
-    chatPanel.querySelectorAll('[data-chat-prompt]').forEach(function (button) {
-      button.addEventListener('click', function () {
-        submitChatMessage(button.getAttribute('data-chat-prompt') || '');
-      });
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !chatPanel.hidden) {
-        setChatOpen(false);
-        chatToggle.focus();
-      }
-    });
-  }
-})();
+});
