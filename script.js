@@ -42,6 +42,7 @@ function setTheme(theme, persist) {
   root.dataset.theme = theme;
   selectHeroSlides(theme);
   const isDark = theme === "dark";
+  if (cursorSnow) cursorSnow.style.opacity = isDark ? "0" : "1";
 
   if (themeIcon) themeIcon.textContent = isDark ? "☀" : "☾";
   if (themeToggle) {
@@ -51,6 +52,49 @@ function setTheme(theme, persist) {
   if (themeColor) themeColor.content = isDark ? "#111512" : "#f7f8f6";
   if (persist) window.localStorage.setItem("portfolio-theme", theme);
 }
+
+let snowLayer;
+let cursorSnow;
+
+function createSnowEffects() {
+  if (snowLayer || !document.body) return;
+
+  snowLayer = document.createElement("div");
+  snowLayer.className = "snow-layer";
+  snowLayer.setAttribute("aria-hidden", "true");
+
+  for (let index = 0; index < 30; index += 1) {
+    const flake = document.createElement("span");
+    flake.className = "snowflake";
+    const size = 4 + Math.random() * 7;
+    flake.style.setProperty("--size", `${size}px`);
+    flake.style.setProperty("--opacity", `${0.25 + Math.random() * 0.75}`);
+    flake.style.setProperty("--duration", `${8 + Math.random() * 12}s`);
+    flake.style.setProperty("--delay", `${(Math.random() * 10).toFixed(2)}s`);
+    flake.style.left = `${Math.random() * 100}%`;
+    flake.style.setProperty("--drift", `${(-50 + Math.random() * 100).toFixed(0)}px`);
+    snowLayer.appendChild(flake);
+  }
+
+  document.body.appendChild(snowLayer);
+
+  cursorSnow = document.createElement("div");
+  cursorSnow.className = "cursor-snow";
+  document.body.appendChild(cursorSnow);
+
+  window.addEventListener("pointermove", (event) => {
+    if (root.dataset.theme === "light") {
+      cursorSnow.style.opacity = "1";
+      cursorSnow.style.transform = `translate(${event.clientX}px, ${event.clientY}px)`;
+    }
+  });
+
+  window.addEventListener("pointerleave", () => {
+    cursorSnow.style.opacity = "0";
+  });
+}
+
+createSnowEffects();
 
 let savedTheme;
 try {

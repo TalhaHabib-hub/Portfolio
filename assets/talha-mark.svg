@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
-  <path d="M5 6h38v7H27v29h-7V13H5z" fill="#315c49"/>
-  <path d="M7 19h7v17h8v6H7zm27 0h7v23h-7zm-20 9h21v6H14z" fill="#20251f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" role="img" aria-label="Talha Habib logo">
+  <rect width="220" height="90" rx="14" fill="#0d1713"/>
+  <text x="110" y="56" text-anchor="middle" font-family="Zeyada, 'Segoe Print', cursive" font-size="52" fill="#9fc9a9">Talha</text>
 </svg>
