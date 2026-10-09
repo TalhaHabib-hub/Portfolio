@@ -4,9 +4,40 @@ const root = document.documentElement;
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = themeToggle?.querySelector(".theme-icon");
 const themeColor = document.querySelector('meta[name="theme-color"]');
+const heroSlides = [...document.querySelectorAll(".hero-landscape")];
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let activeHeroSlides = [];
+let activeHeroSlide = 0;
+let heroRotation;
+
+function syncHeroRotation() {
+  if (document.hidden || reducedMotion.matches || activeHeroSlides.length < 2) {
+    window.clearInterval(heroRotation);
+    heroRotation = undefined;
+    return;
+  }
+  if (heroRotation !== undefined) return;
+
+  heroRotation = window.setInterval(() => {
+    activeHeroSlides[activeHeroSlide].classList.remove("is-active");
+    activeHeroSlide = (activeHeroSlide + 1) % activeHeroSlides.length;
+    activeHeroSlides[activeHeroSlide].classList.add("is-active");
+  }, 7000);
+}
+
+function selectHeroSlides(theme) {
+  window.clearInterval(heroRotation);
+  heroRotation = undefined;
+  heroSlides.forEach((slide) => slide.classList.remove("is-active"));
+  activeHeroSlides = heroSlides.filter((slide) => slide.dataset.theme === theme || slide.dataset.theme === "all");
+  activeHeroSlide = 0;
+  activeHeroSlides[activeHeroSlide]?.classList.add("is-active");
+  syncHeroRotation();
+}
 
 function setTheme(theme, persist) {
   root.dataset.theme = theme;
+  selectHeroSlides(theme);
   const isDark = theme === "dark";
 
   if (themeIcon) themeIcon.textContent = isDark ? "☀" : "☾";
@@ -29,6 +60,9 @@ const initialTheme = savedTheme === "light" || savedTheme === "dark"
   : window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 setTheme(initialTheme, false);
 
+document.addEventListener("visibilitychange", syncHeroRotation);
+reducedMotion.addEventListener("change", syncHeroRotation);
+
 themeToggle?.addEventListener("click", () => {
   const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
   try {
@@ -38,30 +72,6 @@ themeToggle?.addEventListener("click", () => {
     console.warn("Could not save the theme preference.", error);
   }
 });
-
-const heroSlides = [...document.querySelectorAll(".hero-landscape")];
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-let activeHeroSlide = Math.max(0, heroSlides.findIndex((slide) => slide.classList.contains("is-active")));
-let heroRotation;
-
-function syncHeroRotation() {
-  if (document.hidden || reducedMotion.matches || heroSlides.length < 2) {
-    window.clearInterval(heroRotation);
-    heroRotation = undefined;
-    return;
-  }
-  if (heroRotation !== undefined) return;
-
-  heroRotation = window.setInterval(() => {
-    heroSlides[activeHeroSlide].classList.remove("is-active");
-    activeHeroSlide = (activeHeroSlide + 1) % heroSlides.length;
-    heroSlides[activeHeroSlide].classList.add("is-active");
-  }, 7000);
-}
-
-document.addEventListener("visibilitychange", syncHeroRotation);
-reducedMotion.addEventListener("change", syncHeroRotation);
-syncHeroRotation();
 
 const year = document.getElementById("year");
 if (year) year.textContent = new Date().getFullYear();

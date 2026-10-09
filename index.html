@@ -10,6 +10,7 @@
   <meta property="og:type" content="website">
   <title>Talha Habib — Full-stack developer</title>
   <link rel="icon" type="image/png" href="favicon-64.png">
+  <link rel="preload" as="image" href="assets/hero-light.png">
   <link rel="preload" as="image" href="assets/mountain-landscape.jpg">
   <link rel="preload" as="image" href="t1.png">
   <link rel="stylesheet" href="style.css">
@@ -35,9 +36,9 @@
   <main id="main">
     <section class="hero shell" id="home" aria-labelledby="hero-title">
       <div class="hero-landscapes" aria-hidden="true">
-        <img class="hero-landscape is-active" src="assets/mountain-landscape.jpg" alt="" fetchpriority="high">
-        <img class="hero-landscape" src="assets/mountain-lake.jpg" alt="" loading="eager">
-        <img class="hero-landscape" src="assets/mountain-valley.jpg" alt="" loading="eager">
+        <img class="hero-landscape is-active" src="assets/mountain-landscape.jpg" alt="" data-theme="all" fetchpriority="high">
+        <img class="hero-landscape" src="assets/mountain-lake.jpg" alt="" data-theme="all" loading="eager">
+        <img class="hero-landscape" src="assets/mountain-valley.jpg" alt="" data-theme="all" loading="eager">
       </div>
       <div class="hero-copy">
         <p class="eyebrow"><span class="availability-dot"></span> COMPUTER SCIENCE STUDENT · CHITRAL, PAKISTAN</p>
@@ -55,7 +56,8 @@
       </div>
       <div class="hero-portrait">
         <div class="portrait-frame">
-          <img src="t1.png" alt="Portrait of Talha Habib" width="445" height="446">
+          <img src="assets/hero-light.png" alt="Portrait of Talha Habib" width="445" height="446" data-theme="light">
+          <img src="t1.png" alt="Portrait of Talha Habib" width="445" height="446" data-theme="dark">
         </div>
         <div class="portrait-caption"><span>Based in</span><strong>Chitral, Pakistan</strong></div>
         <span class="portrait-index" aria-hidden="true">01 / 04</span>
