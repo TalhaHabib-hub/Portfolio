@@ -4,6 +4,7 @@ const root = document.documentElement;
 const themeToggle = document.getElementById("themeToggle");
 const themeIcon = themeToggle?.querySelector(".theme-icon");
 const themeColor = document.querySelector('meta[name="theme-color"]');
+const hero = document.querySelector(".hero");
 const heroSlides = [...document.querySelectorAll(".hero-landscape")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let activeHeroSlides = [];
@@ -22,6 +23,7 @@ function syncHeroRotation() {
     activeHeroSlides[activeHeroSlide].classList.remove("is-active");
     activeHeroSlide = (activeHeroSlide + 1) % activeHeroSlides.length;
     activeHeroSlides[activeHeroSlide].classList.add("is-active");
+    hero?.classList.toggle("has-water-scene", activeHeroSlides[activeHeroSlide].src.includes("mountain-lake"));
   }, 7000);
 }
 
@@ -32,6 +34,7 @@ function selectHeroSlides(theme) {
   activeHeroSlides = heroSlides.filter((slide) => slide.dataset.theme === theme || slide.dataset.theme === "all");
   activeHeroSlide = 0;
   activeHeroSlides[activeHeroSlide]?.classList.add("is-active");
+  hero?.classList.toggle("has-water-scene", activeHeroSlides[activeHeroSlide]?.src.includes("mountain-lake") || false);
   syncHeroRotation();
 }
 

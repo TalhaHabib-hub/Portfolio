@@ -1,13 +1,11 @@
-# Talha Habib — Portfolio
+# Talha Habib ? Portfolio
 
 A responsive, single-page portfolio for Talha Habib, a Computer Science student and full-stack developer based in Chitral, Pakistan. The site is built with plain HTML, CSS, and JavaScript and deploys as a static site on [Vercel](https://vercel.com).
 
-## What’s on the site
+## What?s on the site
 
 - A concise introduction with GitHub, LinkedIn, WhatsApp, and CV links
 - Three featured projects: an AI study assistant, an education platform, and internship work
-- A dated snapshot of all eight public GitHub repositories, grouped into builds, learning, and portfolio work
-- A smoothly cross-fading mountain slideshow in the hero, with your supplied portrait in the light-mode portrait frame and the existing portrait in dark mode
 - Background, internship experience, and a focused overview of the development toolkit
 - Accessible light and dark themes, with the selected theme saved in the browser
 - A Formspree contact form
@@ -19,12 +17,9 @@ Open `index.html` in a browser, or serve the project directory with any static w
 ## Personalize
 
 - Replace `t1.png` with an optimized profile image and update its alternative text in `index.html`.
-- The locally stored landscape and project photographs are from [Unsplash](https://unsplash.com/). Replace the images in `assets/` to personalize the slideshow and section backgrounds.
-- The light-mode portrait frame uses your supplied image at `assets/hero-light.png`.
 - Update the project descriptions and links in `index.html` as your work evolves.
 - The contact form uses a Formspree endpoint. Replace its `action` URL in `index.html` with your own endpoint if you fork this site.
 - Update the CV at `Talha-Habib-CV.pdf` and the profile URLs in `index.html` when needed.
-- Refresh the repository counts and grouping in the GitHub snapshot section as the public profile changes; these values are a hand-reviewed snapshot, not live analytics.
 
 ## Deployment
 
