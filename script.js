@@ -49,7 +49,7 @@ function setTheme(theme, persist) {
     themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
     themeToggle.title = `Switch to ${isDark ? "light" : "dark"} theme`;
   }
-  if (themeColor) themeColor.content = isDark ? "#111512" : "#f7f8f6";
+  if (themeColor) themeColor.content = isDark ? "#111512" : "#eee8db";
   if (persist) window.localStorage.setItem("portfolio-theme", theme);
 }
 
