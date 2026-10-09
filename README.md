@@ -9,6 +9,8 @@ A responsive, single-page portfolio for Talha Habib, a Computer Science student 
 - Background, internship experience, and a focused overview of the development toolkit
 - Accessible light and dark themes, with the selected theme saved in the browser
 - A Formspree contact form
+- An original TH monogram for the header, footer, and browser tab
+- Custom abstract interface artwork for the light theme
 
 ## Run locally
 
