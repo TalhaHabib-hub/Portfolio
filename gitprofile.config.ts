@@ -2,7 +2,8 @@ const CONFIG = {
   github: {
     username: 'TalhaHabib-hub',
   },
-  base: '/gitprofile/',
+  // Deploying to the root domain on Vercel: use '/'
+  base: '/',
   projects: {
     github: {
       display: true,
