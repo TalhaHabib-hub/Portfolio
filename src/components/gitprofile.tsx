@@ -306,7 +306,12 @@ const GitProfileContent = ({
               className={`p-4 footer ${BG_COLOR} text-base-content footer-center`}
             >
               <div className="card card-sm bg-base-100 shadow-sm">
-                <Footer content={sanitizedConfig.footer} loading={loading} />
+                <Footer
+                  content={sanitizedConfig.footer}
+                  loading={loading}
+                  social={sanitizedConfig.social}
+                  github={sanitizedConfig.github}
+                />
               </div>
             </footer>
           )}

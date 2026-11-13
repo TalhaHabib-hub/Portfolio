@@ -38,6 +38,7 @@ const CONFIG = {
   social: {
     linkedin: 'talha-habib-411405410',
     facebook: 'talha.habib.844453',
+    instagram: 'aienthusiasmml',
     phone: '+923480157976',
     email: 'talhahabib842653@gmail.com',
   },
